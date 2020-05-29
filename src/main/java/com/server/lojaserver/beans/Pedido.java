@@ -1,0 +1,80 @@
+package com.server.lojaserver.beans;
+
+public class Pedido {
+
+    private int codigo;
+    private int mesa;
+    private String produto;
+    private float quantidade;
+    //se é cozinha ou se é bar
+    private String tipo;
+    //se está atrazado, finalizado, ou preparando
+    private String status;
+    private String observacao;
+    private String hora_final;
+
+    public int getMesa() {
+        return mesa;
+    }
+
+    public void setMesa(int mesa) {
+        this.mesa = mesa;
+    }
+
+    public String getHora_final() {
+        return hora_final;
+    }
+
+    public void setHora_final(String hora_final) {
+        this.hora_final = hora_final;
+    }
+    
+
+    public int getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(int codigo) {
+        this.codigo = codigo;
+    }
+
+    public String getProduto() {
+        return produto;
+    }
+
+    public void setProduto(String produto) {
+        this.produto = produto;
+    }
+
+    public float getQuantidade() {
+        return quantidade;
+    }
+
+    public void setQuantidade(float quantidade) {
+        this.quantidade = quantidade;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getObservacao() {
+        return observacao;
+    }
+
+    public void setObservacao(String observacao) {
+        this.observacao = observacao;
+    }
+}
