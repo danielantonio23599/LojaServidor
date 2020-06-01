@@ -7,6 +7,8 @@ package com.server.lojaserver.servlets;
 
 import com.google.gson.Gson;
 import com.server.lojaserver.beans.Mesa;
+import com.server.lojaserver.beans.Venda;
+import com.server.lojaserver.beans.VendaBEAN;
 
 import com.server.lojaserver.controle.ControleLogin;
 import com.server.lojaserver.controle.ControleVenda;
@@ -23,10 +25,10 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Daniel
  */
-@WebServlet(name = "ListarMesasAbertas", urlPatterns = {"/restaurante_server/ListarMesasAbertas"}, initParams = {
+@WebServlet(name = "ListarVendas", urlPatterns = {"/loja_server/ListarVendas"}, initParams = {
     @WebInitParam(name = "nomeUsuario", value = ""),
     @WebInitParam(name = "senha", value = "")})
-public class ListarMesasAbertas extends HttpServlet {
+public class ListarVendas extends HttpServlet {
 
     ControleLogin l = new ControleLogin();
     ControleVenda con = new ControleVenda();
@@ -42,17 +44,16 @@ public class ListarMesasAbertas extends HttpServlet {
          String n = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
         String s = new String(request.getParameter("senha").getBytes("iso-8859-1"), "UTF-8");
         int codE = l.autenticaEmpresa(n,s);
-        int cod = l.autenticaUsuario(n,s);
-        if (cod > 0 || codE > 0) {
+        if (codE > 0 ) {
             response.setHeader("auth", "1");
-            ArrayList<Mesa> u = con.getMesasAbertas(codE);
+            ArrayList<Venda> u = con.getVendas(codE);
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().println(new Gson().toJson(u));
 
         } else {
             response.setHeader("auth", "0");
-            ArrayList<Mesa> u = null;
+            ArrayList<Venda> u = null;
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().println(new Gson().toJson(u));

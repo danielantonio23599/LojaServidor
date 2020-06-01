@@ -5,14 +5,10 @@
  */
 package com.server.lojaserver.servlets;
 
-import com.google.gson.Gson;
-import com.server.lojaserver.beans.ProdutoBEAN;
-import com.server.lojaserver.beans.ProdutosGravados;
+import com.server.lojaserver.controle.ControleCaixa;
 import com.server.lojaserver.controle.ControleLogin;
-import com.server.lojaserver.controle.ControleProduto;
 import com.server.lojaserver.controle.ControleVenda;
 import java.io.IOException;
-import java.util.ArrayList;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebInitParam;
 import javax.servlet.annotation.WebServlet;
@@ -24,12 +20,10 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Daniel
  */
-@WebServlet(name = "ListarProdutosVenda", urlPatterns = {"/restaurante_server/ListarProdutosVenda"}, initParams = {
+@WebServlet(name = "AbrirVenda", urlPatterns = {"/loja_server/AbrirVenda"}, initParams = {
     @WebInitParam(name = "nomeUsuario", value = ""),
-    @WebInitParam(name = "senha", value = ""),
-    @WebInitParam(name = "venda", value = "")
-})
-public class ListarProdutosMesa extends HttpServlet {
+    @WebInitParam(name = "senha", value = "")})
+public class AbrirVenda extends HttpServlet {
 
     ControleLogin l = new ControleLogin();
     ControleVenda con = new ControleVenda();
@@ -42,22 +36,16 @@ public class ListarProdutosMesa extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String n = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
+         String n = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
         String s = new String(request.getParameter("senha").getBytes("iso-8859-1"), "UTF-8");
         int cod = l.autenticaEmpresa(n,s);
         if (cod > 0) {
             response.setHeader("auth", "1");
-            ArrayList<ProdutosGravados> u = con.listarProdutosVenda(request.getParameter("venda"),cod);
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().println(new Gson().toJson(u));
+           response.setHeader("sucesso", con.abrirVenda(cod) + "");
 
         } else {
             response.setHeader("auth", "0");
-            ArrayList<ProdutosGravados> u = null;
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().println(new Gson().toJson(u));
+
         }
     }
 

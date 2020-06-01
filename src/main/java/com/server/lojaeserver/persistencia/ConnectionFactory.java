@@ -20,7 +20,7 @@ public class ConnectionFactory {
     private static ConnectionFactory instance = new ConnectionFactory();
 
     //constante e static - para usar sempre a mesma referência
-    public static final String URL = "jdbc:mysql://localhost:3306/loja_server";
+    public static final String URL = "jdbc:mysql://localhost:3306/banco_loja";
     public static final String USER = "root"; //nome do usuario
     public static final String PASSWORD = ""; //senha
     public static final String DRIVER_CLASS = "org.gjt.mm.mysql.Driver"; //nome do driver

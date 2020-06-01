@@ -15,6 +15,7 @@ public class VendaBEAN {
     private byte[] QRcode;
     private String hora;
     private float valor;
+    private float valorFin;
     private float custo;
     private float desconto;
     private float frete;
@@ -23,6 +24,14 @@ public class VendaBEAN {
     private String status;
     private int entrega;
     private int cliente;
+
+    public float getValorFin() {
+        return valorFin;
+    }
+
+    public void setValorFin(float valorFin) {
+        this.valorFin = valorFin;
+    }
 
     public String getHora() {
         return hora;
@@ -55,7 +64,6 @@ public class VendaBEAN {
     public void setCliente(int cliente) {
         this.cliente = cliente;
     }
-    
 
     public float getDesconto() {
         return desconto;
@@ -73,7 +81,6 @@ public class VendaBEAN {
         this.status = status;
     }
 
-
     public int getCodigo() {
         return codigo;
     }
@@ -89,7 +96,6 @@ public class VendaBEAN {
     public void setQRcode(byte[] QRcode) {
         this.QRcode = QRcode;
     }
-
 
     public float getValor() {
         return valor;

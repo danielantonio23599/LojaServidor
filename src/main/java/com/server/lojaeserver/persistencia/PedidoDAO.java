@@ -79,10 +79,11 @@ public class PedidoDAO {
      public ArrayList<ProdutosGravados> produtosVenda(int venda) {
         ArrayList<ProdutosGravados> c = new ArrayList<ProdutosGravados>();
 
-        String sql = "SELECT pedCodigo,ped_proCodigo, proNome,pedQTD, pedTime,proPreco, (proPreco * pedQTD) "
-                + "FROM produto join pedido join venda"
+        String sql = "SELECT pedCodigo,ped_proCodigo, proNome,pedQTD,proPreco, (proPreco * pedQTD) "
+                + "FROM banco_loja.produto join banco_loja.pedido join banco_loja.venda"
                 + " where"
-                + " venCodigo = ped_venCodigo and ped_proCodigo = proCodigo and venVenda=" + venda + "and ped_excCodigo is null;";
+                + " venCodigo = ped_venCodigo and ped_proCodigo = proCodigo and venCodigo = " + venda + " and ped_excCodigo is null;";
+         System.out.println(sql);
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
@@ -92,9 +93,8 @@ public class PedidoDAO {
                 ca.setCodProduto(rs.getInt(2));
                 ca.setNome(rs.getString(3));
                 ca.setQuantidade(rs.getFloat(4));
-                ca.setTime(rs.getString(5));
-                ca.setValorUNI(rs.getFloat(6));
-                ca.setValorFinal(rs.getFloat(7));
+                ca.setValorUNI(rs.getFloat(5));
+                ca.setValorFinal(rs.getFloat(6));
                 c.add(ca);
             }
             stmt.close();
@@ -208,24 +208,6 @@ public class PedidoDAO {
             System.out.println(e.getMessage());
         }
 
-    }
-
-    public int getMesaBalcaoAberta(int caixa) {
-        int mesa = 0;
-        String sql = "select venMesa from venda where ven_caiCodigo = " + caixa + " and venStatus = 'aberta';";
-        try {
-            PreparedStatement stmt = connection.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                mesa = rs.getInt(1);
-
-            }
-            stmt.close();
-
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        return mesa;
     }
 
     public int getMaxMesa(int caixa) {

@@ -6,15 +6,13 @@
 package com.server.lojaserver.servlets;
 
 import com.google.gson.Gson;
-import com.google.zxing.WriterException;
-import com.server.lojaserver.beans.Mesa;
-
+import com.server.lojaserver.beans.ProdutoBEAN;
+import com.server.lojaserver.beans.ProdutosGravados;
 import com.server.lojaserver.controle.ControleLogin;
+import com.server.lojaserver.controle.ControleProduto;
 import com.server.lojaserver.controle.ControleVenda;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebInitParam;
 import javax.servlet.annotation.WebServlet;
@@ -26,12 +24,12 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Daniel
  */
-@WebServlet(name = "TranferirMesa", urlPatterns = {"/restaurante_server/TranferirMesa"}, initParams = {
-    @WebInitParam(name = "mesaDestino", value = ""),
-    @WebInitParam(name = "mesaOrigem", value = ""),
+@WebServlet(name = "ListarProdutosVenda", urlPatterns = {"/loja_server/ListarProdutosVenda"}, initParams = {
     @WebInitParam(name = "nomeUsuario", value = ""),
-    @WebInitParam(name = "senha", value = "")})
-public class TransferirMesa extends HttpServlet {
+    @WebInitParam(name = "senha", value = ""),
+    @WebInitParam(name = "venda", value = "")
+})
+public class ListarProdutosVenda extends HttpServlet {
 
     ControleLogin l = new ControleLogin();
     ControleVenda con = new ControleVenda();
@@ -46,18 +44,20 @@ public class TransferirMesa extends HttpServlet {
             throws ServletException, IOException {
         String n = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
         String s = new String(request.getParameter("senha").getBytes("iso-8859-1"), "UTF-8");
-        int cod = l.autenticaEmpresa(n, s);
+        int cod = l.autenticaEmpresa(n,s);
         if (cod > 0) {
             response.setHeader("auth", "1");
-            try {
-                response.setHeader("sucesso", con.transferirMesa(request.getParameter("mesaOrigem"), request.getParameter("mesaDestino"), cod));
-            } catch (WriterException ex) {
-                Logger.getLogger(TransferirMesa.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            ArrayList<ProdutosGravados> u = con.listarProdutosVenda(request.getParameter("venda"));
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().println(new Gson().toJson(u));
 
         } else {
             response.setHeader("auth", "0");
-
+            ArrayList<ProdutosGravados> u = null;
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().println(new Gson().toJson(u));
         }
     }
 

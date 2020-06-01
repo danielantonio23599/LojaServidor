@@ -28,9 +28,44 @@ public class Time {
         return dateFormat.format(date);
     }
 
-    public static String formataDataBR(String data) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        return dateFormat.format(data);
+      public static String formataDataBR(String data) {
+        String dataF = "";
+        if (!data.equals("")) {
+            if (!data.equals("  -  -    ")) {
+                try {
+                    SimpleDateFormat formatoDataBanco = new SimpleDateFormat("yyyy-MM-dd");
+                    Date dataBanco = formatoDataBanco.parse(data);
+                    SimpleDateFormat formatoRetorno = new SimpleDateFormat("dd-MM-yyyy");
+                    dataF = formatoRetorno.format(dataBanco);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            return "";
+        }
+        return dataF;
+    }
+
+    public static String formataDataUS(String data) {
+        String dataF = "";
+        if (!data.equals("")) {
+            if (!data.equals("  -  -    ")) {
+                try {
+                    SimpleDateFormat formatoRetorno = new SimpleDateFormat("dd-MM-yyyy");
+                    Date dataBanco = formatoRetorno.parse(data);
+                    SimpleDateFormat formatoDataBanco = new SimpleDateFormat("yyyy-MM-dd");
+
+                    dataF = formatoDataBanco.format(dataBanco);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        System.out.println(dataF);
+        return dataF;
     }
 
     public static String adicionarMeses(String dataAtual, int quantidadeMeses) {

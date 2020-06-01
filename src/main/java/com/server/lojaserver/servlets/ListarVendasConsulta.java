@@ -5,10 +5,15 @@
  */
 package com.server.lojaserver.servlets;
 
-import com.server.lojaserver.controle.ControleCaixa;
+import com.google.gson.Gson;
+import com.server.lojaserver.beans.Mesa;
+import com.server.lojaserver.beans.Venda;
+import com.server.lojaserver.beans.VendaBEAN;
+
 import com.server.lojaserver.controle.ControleLogin;
 import com.server.lojaserver.controle.ControleVenda;
 import java.io.IOException;
+import java.util.ArrayList;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebInitParam;
 import javax.servlet.annotation.WebServlet;
@@ -20,10 +25,11 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Daniel
  */
-@WebServlet(name = "GerarMesaBalcao", urlPatterns = {"/restaurante_server/GerarMesaBalcao"}, initParams = {
+@WebServlet(name = "ListarVendasConsulta", urlPatterns = {"/loja_server/ListarVendasConsulta"}, initParams = {
     @WebInitParam(name = "nomeUsuario", value = ""),
-    @WebInitParam(name = "senha", value = "")})
-public class GerarMesaBalcao extends HttpServlet {
+    @WebInitParam(name = "senha", value = ""),
+@WebInitParam(name = "consulta", value = "")})
+public class ListarVendasConsulta extends HttpServlet {
 
     ControleLogin l = new ControleLogin();
     ControleVenda con = new ControleVenda();
@@ -38,14 +44,21 @@ public class GerarMesaBalcao extends HttpServlet {
             throws ServletException, IOException {
          String n = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
         String s = new String(request.getParameter("senha").getBytes("iso-8859-1"), "UTF-8");
-        int cod = l.autenticaEmpresa(n,s);
-        if (cod > 0) {
+        String consulta = new String(request.getParameter("consulta").getBytes("iso-8859-1"), "UTF-8");
+        int codE = l.autenticaEmpresa(n,s);
+        if (codE > 0 ) {
             response.setHeader("auth", "1");
-            response.setHeader("sucesso", con.gerarMesaBalcao(cod) + "");
+            ArrayList<Venda> u = con.getVendasPorConsulta(codE ,consulta);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().println(new Gson().toJson(u));
 
         } else {
             response.setHeader("auth", "0");
-
+            ArrayList<Venda> u = null;
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().println(new Gson().toJson(u));
         }
     }
 

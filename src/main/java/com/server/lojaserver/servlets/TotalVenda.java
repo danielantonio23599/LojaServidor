@@ -20,11 +20,11 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Daniel
  */
-@WebServlet(name = "TotalMesa", urlPatterns = {"/restaurante_server/TotalMesa"}, initParams = {
+@WebServlet(name = "TotalVenda", urlPatterns = {"/loja_server/TotalVenda"}, initParams = {
     @WebInitParam(name = "nomeUsuario", value = ""),
     @WebInitParam(name = "senha", value = ""),
-    @WebInitParam(name = "mesa", value = "")})
-public class TotalMesa extends HttpServlet {
+    @WebInitParam(name = "venda", value = "")})
+public class TotalVenda extends HttpServlet {
 
     ControleLogin l = new ControleLogin();
     ControleVenda f = new ControleVenda();
@@ -42,7 +42,7 @@ public class TotalMesa extends HttpServlet {
         int cod = l.autenticaEmpresa(n, s);
         if (cod > 0) {
             response.setHeader("auth", "1");
-            float reto = f.getValorMesa(request.getParameter("mesa"), cod);
+            float reto = f.getValorVenda(request.getParameter("venda"), cod);
             response.setHeader("sucesso", reto + "");
 
         } else {

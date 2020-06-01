@@ -5,16 +5,15 @@
  */
 package com.server.lojaserver.servlets;
 
-import com.google.gson.GsonBuilder;
-import com.google.zxing.WriterException;
-import com.server.lojaserver.beans.CaixaBEAN;
+import com.google.gson.Gson;
+import com.server.lojaserver.beans.Mesa;
+import com.server.lojaserver.beans.Venda;
+import com.server.lojaserver.beans.VendaBEAN;
 
-import com.server.lojaserver.controle.ControleCaixa;
 import com.server.lojaserver.controle.ControleLogin;
 import com.server.lojaserver.controle.ControleVenda;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebInitParam;
 import javax.servlet.annotation.WebServlet;
@@ -26,11 +25,10 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Daniel
  */
-@WebServlet(name = "AbrirMesa", urlPatterns = {"/restaurante_server/AbrirMesa"}, initParams = {
+@WebServlet(name = "ListarVendasAbertas", urlPatterns = {"/loja_server/ListarVendasAbertas"}, initParams = {
     @WebInitParam(name = "nomeUsuario", value = ""),
-    @WebInitParam(name = "senha", value = ""),
-    @WebInitParam(name = "mesa", value = "")})
-public class AbrirMesa extends HttpServlet {
+    @WebInitParam(name = "senha", value = "")})
+public class ListarVendasAbertas extends HttpServlet {
 
     ControleLogin l = new ControleLogin();
     ControleVenda con = new ControleVenda();
@@ -43,28 +41,23 @@ public class AbrirMesa extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String usuario = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
-        String senha = new String(request.getParameter("senha").getBytes("iso-8859-1"), "UTF-8");
-        int cod = l.autenticaEmpresa(usuario, senha);
-        if (cod > 0) {
+         String n = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
+        String s = new String(request.getParameter("senha").getBytes("iso-8859-1"), "UTF-8");
+        int codE = l.autenticaEmpresa(n,s);
+        int cod = l.autenticaUsuario(n,s);
+        if (cod > 0 || codE > 0) {
             response.setHeader("auth", "1");
-            int i = 0;
-            i = con.abrirMesaM(request.getParameter("mesa"), cod);
-
-            if (i > 0) {
-                //mesa aberta 
-                response.setHeader("sucesso", i + "");
-            } else if (i == 0) {
-                //mesa já aberta
-                response.setHeader("sucesso", "0");
-            } else if (i == -1) {
-                //caixa fechado
-                response.setHeader("sucesso", "-1");
-            }
+            ArrayList<Venda> u = con.getVendasAbertas(codE);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().println(new Gson().toJson(u));
 
         } else {
             response.setHeader("auth", "0");
-
+            ArrayList<Venda> u = null;
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().println(new Gson().toJson(u));
         }
     }
 
