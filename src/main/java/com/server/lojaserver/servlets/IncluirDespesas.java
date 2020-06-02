@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Daniel
  */
-@WebServlet(name = "IncluirDespesa", urlPatterns = {"/restaurante_server/IncluirDespesa"}, initParams = {
+@WebServlet(name = "IncluirDespesa", urlPatterns = {"/loja_server/IncluirDespesa"}, initParams = {
     @WebInitParam(name = "despesa", value = ""),
     @WebInitParam(name = "nomeUsuario", value = ""),
     @WebInitParam(name = "senha", value = "")})
@@ -41,13 +41,13 @@ public class IncluirDespesas extends HttpServlet {
             throws ServletException, IOException {
          String n = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
         String s = new String(request.getParameter("senha").getBytes("iso-8859-1"), "UTF-8");
-        int cod = l.autenticaUsuario(n,s);
+        int cod = l.autenticaEmpresa(n,s);
         if (cod > 0) {
             response.setHeader("auth", "1");
             String str = new String (request.getParameter("despesa").getBytes ("iso-8859-1"), "UTF-8");
             DespesaBEAN c = new GsonBuilder().setDateFormat("dd-MM-yyyy HH:mm:ss").create().fromJson(str, DespesaBEAN.class);
 
-            response.setHeader("sucesso", con_des.adicionar(c));
+            response.setHeader("sucesso", con_des.adicionar(c,cod));
 
         } else {
             response.setHeader("auth", "0");

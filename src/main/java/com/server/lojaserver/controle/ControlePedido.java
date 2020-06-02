@@ -10,6 +10,7 @@ import com.server.lojaserver.beans.ProdutoBEAN;
 import com.server.lojaserver.beans.Produtos;
 import com.server.lojaeserver.persistencia.PedidoDAO;
 import com.server.lojaeserver.persistencia.ProdutoDAO;
+import com.server.lojaserver.beans.PedidoBEAN;
 import com.server.lojaserver.util.Horas;
 import java.util.ArrayList;
 import javax.swing.DefaultComboBoxModel;
@@ -21,8 +22,9 @@ import javax.swing.DefaultComboBoxModel;
 public class ControlePedido {
 
     private ProdutoDAO p = new ProdutoDAO();
+    private PedidoDAO ped = new PedidoDAO();
 
-    public DefaultComboBoxModel buscar(String produto,int emp) {
+    public DefaultComboBoxModel buscar(String produto, int emp) {
         DefaultComboBoxModel modelo = new DefaultComboBoxModel();
         ArrayList<Produtos> pe = p.buscar(produto, emp);
         for (Produtos p : pe) {
@@ -64,6 +66,11 @@ public class ControlePedido {
         return pro;
     }
 
+    public PedidoBEAN listarPedido(int pedido) {
+        PedidoDAO p = new PedidoDAO();
+        return p.localizar(pedido);
+    }
+
     public ArrayList<Pedido> listarPedidos(int emp) {
         ControleCaixa cai = new ControleCaixa();
         PedidoDAO ped = new PedidoDAO();
@@ -76,7 +83,7 @@ public class ControlePedido {
         ControleCaixa cai = new ControleCaixa();
         PedidoDAO ped = new PedidoDAO();
         int caixa = cai.getCaixa(emp);
-       // ArrayList<Pedido> pedidos = ped.listarPedidos(emp, caixa);
+        // ArrayList<Pedido> pedidos = ped.listarPedidos(emp, caixa);
         return null;
     }
 
@@ -112,6 +119,11 @@ public class ControlePedido {
         }
         return null;
 
+    }
+
+    public void devolver(int codigo, int devolucao) {
+
+        ped.devolver(codigo, devolucao);
     }
 
 }

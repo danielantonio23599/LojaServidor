@@ -28,13 +28,15 @@ public class DevolucaoDAO {
 
     public int inserir(DevolucaoBEAN c) {
         int lastId = 0;
-        String sql = "INSERT INTO exclusao (excMotivo , excTime, exc_funCodigo)"
-                + " VALUES (?, ?, ?);";
+        String sql = "INSERT INTO devolucao (devMotivo, devTime, devQTD, devValor, dev_caiCodigo)"
+                + " VALUES (?, ?, ?, ?, ?);";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, c.getMotivo());
             stmt.setString(2, c.getTime());
-            stmt.setInt(3, c.getFuncionario());
+            stmt.setFloat(3, c.getQuantidade());
+            stmt.setFloat(4, c.getValor());
+            stmt.setInt(5, c.getCaixa());
             stmt.executeUpdate();
             final ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
@@ -49,14 +51,12 @@ public class DevolucaoDAO {
         return lastId;
     }
 
-    public ArrayList<DevolucaoBEAN> listarExclusaoVenda(int venda) {
+    public ArrayList<DevolucaoBEAN> listarDevolucaoVenda(int venda) {
         ArrayList<DevolucaoBEAN> c = new ArrayList<>();
 
-        String sql = "select excCodigo,excMotivo , excTime, funNome\n"
-                + "	from funcionario join exclusao join pedido join venda\n"
-                + "		where funCodigo = exc_funCodigo and ped_excCodigo = excCodigo and venCodigo = ped_venCodigo and venCodigo ='" + venda + "' \n"
-                + "			group by venCodigo \n"
-                + "				order by venMesa;";
+        String sql = "select devCodigo,devMotivo,devTime,devValor,devQTD,dev_caiCodigo,proNome\n"
+                + "                  from  caixa join devolucao join pedido join produto where\n"
+                + "                  caiCodigo = dev_caiCodigo and devCodigo = ped_excCodigo and proCodigo = ped_proCodigo and ped_venCodigo = " + venda + " order by devTime;";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
@@ -65,7 +65,10 @@ public class DevolucaoDAO {
                 e.setCodigo(rs.getInt(1));
                 e.setMotivo(rs.getString(2));
                 e.setTime(rs.getString(3));
-                e.setFuncionarioN(rs.getString(4));
+                e.setValor(rs.getFloat(4));
+                e.setQuantidade(rs.getFloat(5));
+                e.setCaixa(rs.getInt(6));
+                e.setProduto(rs.getString(7));
                 c.add(e);
             }
             stmt.close();
@@ -79,8 +82,8 @@ public class DevolucaoDAO {
     public DevolucaoBEAN listarUm(String cod) {
         DevolucaoBEAN e = new DevolucaoBEAN();
         System.out.println("Codigo " + cod);
-        String sql = "select * from exclusao where "
-                + " excCodigo = " + cod + ";";
+        String sql = "select * from devolucao where "
+                + " devCodigo = " + cod + ";";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
@@ -88,7 +91,9 @@ public class DevolucaoDAO {
                 e.setCodigo(rs.getInt(1));
                 e.setMotivo(rs.getString(2));
                 e.setTime(rs.getString(3));
-                e.setFuncionario(rs.getInt(4));
+                e.setValor(rs.getFloat(4));
+                e.setQuantidade(rs.getFloat(5));
+                e.setCaixa(rs.getInt(6));
             }
             stmt.close();
 
@@ -98,13 +103,12 @@ public class DevolucaoDAO {
         return e;
     }
 
-    public ArrayList<DevolucaoBEAN> listarExclusaoCaixa(int caixa) {
+    public ArrayList<DevolucaoBEAN> listarDevolucaoCaixa(int caixa) {
         ArrayList<DevolucaoBEAN> c = new ArrayList<>();
 
-        String sql = "select excCodigo,excMotivo,excTime,exc_funCodigo,funNome "
-                + "   from  venda join pedido join exclusao join funcionario \n"
-                + "   where ped_venCodigo= venCodigo and excCodigo = ped_excCodigo and exc_funCodigo = funCodigo and ven_caiCodigo = " + caixa + "\n"
-                + "   order by excTime;";
+        String sql = "select devCodigo,devMotivo,devTime,devValor,devQTD,dev_caiCodigo,proNome\n"
+                + "                  from  caixa join devolucao join pedido join produto where\n"
+                + "                  caiCodigo = dev_caiCodigo and devCodigo = ped_excCodigo and proCodigo = ped_proCodigo and caiCodigo = " + caixa + "  order by devTime;";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
@@ -113,8 +117,10 @@ public class DevolucaoDAO {
                 e.setCodigo(rs.getInt(1));
                 e.setMotivo(rs.getString(2));
                 e.setTime(rs.getString(3));
-                e.setFuncionario(rs.getInt(4));
-                e.setFuncionarioN(rs.getString(5));
+                e.setValor(rs.getFloat(4));
+                e.setQuantidade(rs.getFloat(5));
+                e.setCaixa(rs.getInt(6));
+                e.setProduto(rs.getString(7));
                 c.add(e);
             }
             stmt.close();
@@ -125,4 +131,63 @@ public class DevolucaoDAO {
         return c;
     }
 
+    public Float getValorDevolucaoCaixa(int caixa) {
+        float total = 0;
+        String sql = "select coalesce(sum(devQTD*proPreco),0)\n"
+                + "                  from  caixa join devolucao join pedido join produto where\n"
+                + "                  caiCodigo = dev_caiCodigo and devCodigo = ped_excCodigo and proCodigo = ped_proCodigo and caiCodigo = " + caixa + " group by caiCodigo;";
+        System.out.println(sql);
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                total = rs.getFloat(1);
+            }
+            stmt.close();
+
+        } catch (SQLException e) {
+            throw new RuntimeException();
+        }
+        return total;
+    }
+
+    public Float getValorDevolucao(int devolucao) {
+        float total = 0;
+        String sql = "select coalesce(devValor,0)\n"
+                + "                  from devolucao where\n"
+                + "                   devCodigo =" + devolucao + ";";
+
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                total = rs.getFloat(1);
+            }
+            stmt.close();
+
+        } catch (SQLException e) {
+            throw new RuntimeException();
+        }
+        return total;
+    }
+
+    public Float getValorDevolucaoVenda(int caixa) {
+        float total = 0;
+        String sql = "select coalesce((pedQTD*proPreco),0)\n"
+                + "                  from  caixa join devolucao join pedido join produto where\n"
+                + "                  caiCodigo = dev_caiCodigo and devCodigo = ped_excCodigo and proCodigo = ped_proCodigo and caiCodigo = " + caixa + "group by caiCodigo;";
+
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                total = rs.getFloat(1);
+            }
+            stmt.close();
+
+        } catch (SQLException e) {
+            throw new RuntimeException();
+        }
+        return total;
+    }
 }

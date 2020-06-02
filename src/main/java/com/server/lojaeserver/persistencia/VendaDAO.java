@@ -115,7 +115,6 @@ public class VendaDAO {
         return v;
     }
 
-
     public Float getCustoVenda(int venda) {
         float valor = 0;
 
@@ -141,14 +140,11 @@ public class VendaDAO {
 
         String sql = "select (venCodigo)as venda, venStatus,venTime,ven_cliCodigo,\n"
                 + "                COALESCE((select  sum(pedQTD*proPreco) \n"
-                + "                from banco_loja.venda join banco_loja.pedido join banco_loja.produto where  ped_venCodigo = venCodigo and ped_proCodigo = proCodigo \n"
-                + "                and ven_caiCodigo = " + caixa + " and venStatus = 'aberta' and ped_excCodigo is null and venda = venCodigo ),0) \n"
-                + "                as valor from\n"
-                + "                caixa join banco_loja.venda join banco_loja.pedido join banco_loja.produto \n"
+                + "                from banco_loja.venda join banco_loja.pedido join banco_loja.produto where  ped_venCodigo = venCodigo and ped_proCodigo = proCodigo and venda = venCodigo ),0) \n"
+                + "                as valor, COALESCE((select sum(devValor)from devolucao join pedido where devCodigo = ped_excCodigo and ped_venCodigo = venda),0) as devolucao from\n"
+                + "                banco_loja.caixa join banco_loja.venda \n"
                 + "                where \n"
-                + "                caiCodigo = ven_caiCodigo and ped_venCodigo = venCodigo and ped_proCodigo = proCodigo and ven_caiCodigo =  " + caixa + "\n"
-                + "                and caiStatus = 'aberto'and venStatus = 'aberta'  \n"
-                + "                group by venCodigo;";
+                + "                caiCodigo = ven_caiCodigo  and caiCodigo = " + caixa + " and venStatus = 'aberta';";
         System.out.println(sql);
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -160,6 +156,7 @@ public class VendaDAO {
                 ca.setHora(rs.getString(3));
                 ca.setCliente(rs.getString(4));
                 ca.setValor(rs.getFloat(5));
+                ca.setDevolucao(rs.getFloat(6));
                 c.add(ca);
             }
             stmt.close();
@@ -173,18 +170,17 @@ public class VendaDAO {
     public ArrayList<Venda> listarVendas(int empresa) {
         ArrayList<Venda> c = new ArrayList<>();
 
-        String sql = "select (venCodigo)as venda, venStatus,venTime,(select cliNome from venda join cliente where ven_cliCodigo = cliCodigo and venCodigo = venda) as cliente,\n"
-                + "                         COALESCE((select  sum(pedQTD*proPreco) \n"
-                + "                                from banco_loja.venda join banco_loja.pedido join banco_loja.produto where  ped_venCodigo = venCodigo and ped_proCodigo = proCodigo \n"
-                + "                                and venCodigo = venda and ped_excCodigo is null and venda = venCodigo ),0) \n"
-                + "                                as valor, COALESCE((select  sum(pedQTD*proCusto) \n"
-                + "                                from banco_loja.venda join banco_loja.pedido join banco_loja.produto where  ped_venCodigo = venCodigo and ped_proCodigo = proCodigo \n"
-                + "                                and venCodigo = venda and ped_excCodigo is null and venda = venCodigo ),0) as custo \n"
-                + "                                ,venFrete, venDesconto, venValorFin, caiData from banco_loja.empresa join\n"
-                + "                                banco_loja.caixa join banco_loja.venda join banco_loja.pedido join banco_loja.produto \n"
-                + "                                where \n"
-                + "                                empCodigo = cai_empCodigo and\n"
-                + "                                caiCodigo = ven_caiCodigo and ped_venCodigo = venCodigo and ped_proCodigo = proCodigo and empCodigo = " + empresa + " group by venCodigo;";
+        String sql = "select (venCodigo)as venda, venStatus,venTime,venPagamento,(select cliNome from venda join cliente where ven_cliCodigo = cliCodigo and venCodigo = venda) as cliente,\n"
+                + "                COALESCE((select  sum(pedQTD*proPreco) \n"
+                + "                from banco_loja.venda join banco_loja.pedido join banco_loja.produto where  ped_venCodigo = venCodigo and ped_proCodigo = proCodigo and venda = venCodigo ),0) \n"
+                + "                as valor,COALESCE((select  sum(pedQTD*proCusto) from banco_loja.venda join banco_loja.pedido join banco_loja.produto where  ped_venCodigo = venCodigo and ped_proCodigo = proCodigo \n"
+                + "				and venCodigo = venda and ped_excCodigo is null and venda = venCodigo ),0) as custo,                \n"
+                + "                COALESCE((select sum(devValor)from devolucao join pedido where devCodigo = ped_excCodigo and ped_venCodigo = venda),0) as devolucao\n"
+                + "                ,venFrete, venDesconto,venValorFin, caiData\n"
+                + "                from banco_loja.empresa join\n"
+                + "                banco_loja.caixa join banco_loja.venda \n"
+                + "                where empCodigo = cai_empCodigo and\n"
+                + "                caiCodigo = ven_caiCodigo  and empCodigo = " + empresa + " ;";
         System.out.println(sql);
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -194,13 +190,15 @@ public class VendaDAO {
                 ca.setCodigo(rs.getInt(1));
                 ca.setStatus(rs.getString(2));
                 ca.setHora(rs.getString(3));
-                ca.setCliente(rs.getString(4));
-                ca.setValor(rs.getFloat(5));
-                ca.setCusto(rs.getFloat(6));
-                ca.setFrete(rs.getFloat(7));
-                ca.setDesconto(rs.getFloat(8));
-                ca.setValorFinal(rs.getFloat(9));
-                ca.setData(Time.formataDataBR(rs.getString(10)));
+                ca.setPagamento(rs.getString(4));
+                ca.setCliente(rs.getString(5));
+                ca.setValor(rs.getFloat(6));
+                ca.setCusto(rs.getFloat(7));
+                ca.setDevolucao(rs.getFloat(8));
+                ca.setFrete(rs.getFloat(9));
+                ca.setDesconto(rs.getFloat(10));
+                ca.setValorFinal(rs.getFloat(11));
+                ca.setData(Time.formataDataBR(rs.getString(12)));
                 c.add(ca);
             }
             stmt.close();
@@ -214,18 +212,17 @@ public class VendaDAO {
     public ArrayList<Venda> listarVendasPorStatus(int empresa, String status) {
         ArrayList<Venda> c = new ArrayList<>();
 
-        String sql = "select (venCodigo)as venda, venStatus,venTime,(select cliNome from venda join cliente where ven_cliCodigo = cliCodigo and venCodigo = venda) as cliente,\n"
-                + "                         COALESCE((select  sum(pedQTD*proPreco) \n"
-                + "                                from banco_loja.venda join banco_loja.pedido join banco_loja.produto where  ped_venCodigo = venCodigo and ped_proCodigo = proCodigo \n"
-                + "                                and venCodigo = venda and ped_excCodigo is null and venda = venCodigo ),0) \n"
-                + "                                as valor, COALESCE((select  sum(pedQTD*proCusto) \n"
-                + "                                from banco_loja.venda join banco_loja.pedido join banco_loja.produto where  ped_venCodigo = venCodigo and ped_proCodigo = proCodigo \n"
-                + "                                and venCodigo = venda and ped_excCodigo is null and venda = venCodigo ),0) as custo \n"
-                + "                                ,venFrete, venDesconto, venValorFin, caiData from banco_loja.empresa join\n"
-                + "                                banco_loja.caixa join banco_loja.venda join banco_loja.pedido join banco_loja.produto \n"
-                + "                                where \n"
-                + "                                empCodigo = cai_empCodigo and\n"
-                + "                                caiCodigo = ven_caiCodigo and ped_venCodigo = venCodigo and ped_proCodigo = proCodigo and empCodigo = " + empresa + " and venStatus = '" + status + "' group by venCodigo;";
+        String sql = "select (venCodigo)as venda, venStatus,venTime,venPagamento,(select cliNome from venda join cliente where ven_cliCodigo = cliCodigo and venCodigo = venda) as cliente,\n"
+                + "                COALESCE((select  sum(pedQTD*proPreco) \n"
+                + "                from banco_loja.venda join banco_loja.pedido join banco_loja.produto where  ped_venCodigo = venCodigo and ped_proCodigo = proCodigo and venda = venCodigo ),0) \n"
+                + "                as valor,COALESCE((select  sum(pedQTD*proCusto) from banco_loja.venda join banco_loja.pedido join banco_loja.produto where  ped_venCodigo = venCodigo and ped_proCodigo = proCodigo \n"
+                + "				and venCodigo = venda and ped_excCodigo is null and venda = venCodigo ),0) as custo,                \n"
+                + "                COALESCE((select sum(devValor)from devolucao join pedido where devCodigo = ped_excCodigo and ped_venCodigo = venda),0) as devolucao\n"
+                + "                ,venFrete, venDesconto,venValorFin, caiData\n"
+                + "                from banco_loja.empresa join\n"
+                + "                banco_loja.caixa join banco_loja.venda \n"
+                + "                where empCodigo = cai_empCodigo and\n"
+                + "                caiCodigo = ven_caiCodigo  and venStatus = '" + status + "' and empCodigo = " + empresa + " ;";
         System.out.println(sql);
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -235,13 +232,15 @@ public class VendaDAO {
                 ca.setCodigo(rs.getInt(1));
                 ca.setStatus(rs.getString(2));
                 ca.setHora(rs.getString(3));
-                ca.setCliente(rs.getString(4));
-                ca.setValor(rs.getFloat(5));
-                ca.setCusto(rs.getFloat(6));
-                ca.setFrete(rs.getFloat(7));
-                ca.setDesconto(rs.getFloat(8));
-                ca.setValorFinal(rs.getFloat(9));
-                ca.setData(Time.formataDataBR(rs.getString(10)));
+                ca.setPagamento(rs.getString(4));
+                ca.setCliente(rs.getString(5));
+                ca.setValor(rs.getFloat(6));
+                ca.setCusto(rs.getFloat(7));
+                ca.setDevolucao(rs.getFloat(8));
+                ca.setFrete(rs.getFloat(9));
+                ca.setDesconto(rs.getFloat(10));
+                ca.setValorFinal(rs.getFloat(11));
+                ca.setData(Time.formataDataBR(rs.getString(12)));
                 c.add(ca);
             }
             stmt.close();
@@ -255,18 +254,17 @@ public class VendaDAO {
     public ArrayList<Venda> listarVendasPorConsulta(int empresa, String cliente) {
         ArrayList<Venda> c = new ArrayList<>();
 
-        String sql = "select (venCodigo)as venda, venStatus,venTime,(select cliNome from venda join cliente where ven_cliCodigo = cliCodigo and venCodigo = venda) as cliente,\n"
-                + "                         COALESCE((select  sum(pedQTD*proPreco) \n"
-                + "                                from banco_loja.venda join banco_loja.pedido join banco_loja.produto where  ped_venCodigo = venCodigo and ped_proCodigo = proCodigo \n"
-                + "                                and venCodigo = venda and ped_excCodigo is null and venda = venCodigo ),0) \n"
-                + "                                as valor, COALESCE((select  sum(pedQTD*proCusto) \n"
-                + "                                from banco_loja.venda join banco_loja.pedido join banco_loja.produto where  ped_venCodigo = venCodigo and ped_proCodigo = proCodigo \n"
-                + "                                and venCodigo = venda and ped_excCodigo is null and venda = venCodigo ),0) as custo \n"
-                + "                                ,venFrete, venDesconto, venValorFin, caiData from banco_loja.empresa join\n"
-                + "                                banco_loja.caixa join banco_loja.venda join banco_loja.pedido join banco_loja.produto \n"
-                + "                                where \n"
-                + "                                empCodigo = cai_empCodigo and\n"
-                + "                                caiCodigo = ven_caiCodigo and ped_venCodigo = venCodigo and ped_proCodigo = proCodigo and empCodigo = " + empresa + " and (cliente LIKE '" + cliente + "%' or venCodigo LIKE '" + cliente + "%') group by venCodigo;";
+        String sql = "select (venCodigo)as venda, venStatus,venTime,venPagamento,(select cliNome from venda join cliente where ven_cliCodigo = cliCodigo and venCodigo = venda ) as cli,\n"
+                + "                COALESCE((select  sum(pedQTD*proPreco) \n"
+                + "                from banco_loja.venda join banco_loja.pedido join banco_loja.produto where  ped_venCodigo = venCodigo and ped_proCodigo = proCodigo and venda = venCodigo ),0) \n"
+                + "                as valor,COALESCE((select  sum(pedQTD*proCusto) from banco_loja.venda join banco_loja.pedido join banco_loja.produto where  ped_venCodigo = venCodigo and ped_proCodigo = proCodigo \n"
+                + "				and venCodigo = venda and ped_excCodigo is null and venda = venCodigo ),0) as custo,                \n"
+                + "                COALESCE((select sum(devValor)from devolucao join pedido where devCodigo = ped_excCodigo and ped_venCodigo = venda),0) as devolucao\n"
+                + "                ,venFrete, venDesconto,venValorFin, caiData\n"
+                + "                from banco_loja.empresa join\n"
+                + "                banco_loja.caixa join banco_loja.venda join cliente\n"
+                + "                where empCodigo = cai_empCodigo and\n"
+                + "                caiCodigo = ven_caiCodigo and ven_cliCodigo = cliCodigo and empCodigo = " + empresa + " and cliNome like '" + cliente + "%' ;";
         System.out.println(sql);
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -276,13 +274,15 @@ public class VendaDAO {
                 ca.setCodigo(rs.getInt(1));
                 ca.setStatus(rs.getString(2));
                 ca.setHora(rs.getString(3));
-                ca.setCliente(rs.getString(4));
-                ca.setValor(rs.getFloat(5));
-                ca.setCusto(rs.getFloat(6));
-                ca.setFrete(rs.getFloat(7));
-                ca.setDesconto(rs.getFloat(8));
-                ca.setValorFinal(rs.getFloat(9));
-                ca.setData(Time.formataDataBR(rs.getString(10)));
+                ca.setPagamento(rs.getString(4));
+                ca.setCliente(rs.getString(5));
+                ca.setValor(rs.getFloat(6));
+                ca.setCusto(rs.getFloat(7));
+                ca.setDevolucao(rs.getFloat(8));
+                ca.setFrete(rs.getFloat(9));
+                ca.setDesconto(rs.getFloat(10));
+                ca.setValorFinal(rs.getFloat(11));
+                ca.setData(Time.formataDataBR(rs.getString(12)));
                 c.add(ca);
             }
             stmt.close();
@@ -296,18 +296,17 @@ public class VendaDAO {
     public ArrayList<Venda> listarVendasPorInData(int empresa, String dataIn, String dataFin) {
         ArrayList<Venda> c = new ArrayList<>();
 
-        String sql = "select (venCodigo)as venda, venStatus,venTime,(select cliNome from venda join cliente where ven_cliCodigo = cliCodigo and venCodigo = venda) as cliente,\n"
-                + "                         COALESCE((select  sum(pedQTD*proPreco) \n"
-                + "                                from banco_loja.venda join banco_loja.pedido join banco_loja.produto where  ped_venCodigo = venCodigo and ped_proCodigo = proCodigo \n"
-                + "                                and venCodigo = venda and ped_excCodigo is null and venda = venCodigo ),0) \n"
-                + "                                as valor, COALESCE((select  sum(pedQTD*proCusto) \n"
-                + "                                from banco_loja.venda join banco_loja.pedido join banco_loja.produto where  ped_venCodigo = venCodigo and ped_proCodigo = proCodigo \n"
-                + "                                and venCodigo = venda and ped_excCodigo is null and venda = venCodigo ),0) as custo \n"
-                + "                                ,venFrete, venDesconto, venValorFin, caiData from banco_loja.empresa join\n"
-                + "                                banco_loja.caixa join banco_loja.venda join banco_loja.pedido join banco_loja.produto \n"
-                + "                                where \n"
-                + "                                empCodigo = cai_empCodigo and\n"
-                + "                                caiCodigo = ven_caiCodigo and ped_venCodigo = venCodigo and ped_proCodigo = proCodigo and empCodigo = " + empresa + " and caiData between '" + dataIn + "' and '" + dataFin + "' group by venCodigo;";
+        String sql = "select (venCodigo)as venda, venStatus,venTime,venPagamento,(select cliNome from venda join cliente where ven_cliCodigo = cliCodigo and venCodigo = venda ) as cli,\n"
+                + "                COALESCE((select  sum(pedQTD*proPreco) \n"
+                + "                from banco_loja.venda join banco_loja.pedido join banco_loja.produto where  ped_venCodigo = venCodigo and ped_proCodigo = proCodigo and venda = venCodigo ),0) \n"
+                + "                as valor,COALESCE((select  sum(pedQTD*proCusto) from banco_loja.venda join banco_loja.pedido join banco_loja.produto where  ped_venCodigo = venCodigo and ped_proCodigo = proCodigo \n"
+                + "				and venCodigo = venda and ped_excCodigo is null and venda = venCodigo ),0) as custo,                \n"
+                + "                COALESCE((select sum(devValor)from devolucao join pedido where devCodigo = ped_excCodigo and ped_venCodigo = venda),0) as devolucao\n"
+                + "                ,venFrete, venDesconto,venValorFin, caiData\n"
+                + "                from banco_loja.empresa join\n"
+                + "                banco_loja.caixa join banco_loja.venda\n"
+                + "                where empCodigo = cai_empCodigo and\n"
+                + "                caiCodigo = ven_caiCodigo  and empCodigo = 2 and caiData between '" + dataIn + "' and '" + dataFin + "'  ;";
         System.out.println(sql);
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -317,13 +316,15 @@ public class VendaDAO {
                 ca.setCodigo(rs.getInt(1));
                 ca.setStatus(rs.getString(2));
                 ca.setHora(rs.getString(3));
-                ca.setCliente(rs.getString(4));
-                ca.setValor(rs.getFloat(5));
-                ca.setCusto(rs.getFloat(6));
-                ca.setFrete(rs.getFloat(7));
-                ca.setDesconto(rs.getFloat(8));
-                ca.setValorFinal(rs.getFloat(9));
-                ca.setData(Time.formataDataBR(rs.getString(10)));
+                ca.setPagamento(rs.getString(4));
+                ca.setCliente(rs.getString(5));
+                ca.setValor(rs.getFloat(6));
+                ca.setCusto(rs.getFloat(7));
+                ca.setDevolucao(rs.getFloat(8));
+                ca.setFrete(rs.getFloat(9));
+                ca.setDesconto(rs.getFloat(10));
+                ca.setValorFinal(rs.getFloat(11));
+                ca.setData(Time.formataDataBR(rs.getString(12)));
                 c.add(ca);
             }
             stmt.close();
@@ -336,7 +337,7 @@ public class VendaDAO {
 
     public void atualizaVenda(VendaBEAN c) {
         String sql = "update venda set venTime = '" + c.getHora() + "' , venValor = " + c.getValor() + " , venPagamento = '" + c.getPagamento() + "' "
-                + ", venStatus = 'fechada', venQRcode = '" + c.getQRcode() + "', venCusto = " + c.getCusto() + ", venDesconto = " + c.getDesconto() + ", venFrete = " + c.getFrete() + ", venValorFin = " + c.getValorFin()+ "  where venCodigo = " + c.getCodigo() + " ;";
+                + ", venStatus = 'fechada', venQRcode = '" + c.getQRcode() + "', venCusto = " + c.getCusto() + ", venDesconto = " + c.getDesconto() + ", venFrete = " + c.getFrete() + ", venValorFin = " + c.getValorFin() + "  where venCodigo = " + c.getCodigo() + " ;";
         System.out.println(sql);
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);

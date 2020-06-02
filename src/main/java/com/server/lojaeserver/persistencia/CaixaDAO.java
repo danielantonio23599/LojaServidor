@@ -94,20 +94,17 @@ public class CaixaDAO {
     }
 
     public float getSaldoAtual(int caixa, int emp) {
-
         float saldo = 0;
-        String sql = "select	round(( (COALESCE(sum(venValor) ,0)+ caiTrocoIn) -\n"
-                + "			  ( \n"
-                + "				(select COALESCE(sum(disPreco),0) from caixa join despesa_dia join despesa where caiCodigo =  ded_caiCodigo and disCodigo = ded_disCodigo and caiCodigo = " + caixa + ")\n"
-                + "					+ (select COALESCE(sum(sanValor),0) as sangria from caixa join sangria where caiCodigo = san_caiCodigo and caiCodigo = " + caixa + ")\n"
-                + "			  )\n"
-                + "		 ),2) as Saldo\n"
-                + "			from caixa join venda where caiCodigo = ven_caiCodigo and venStatus = 'fechada' and caiCodigo = " + caixa + " and cai_empCodigo = " + emp + ";";
+        String sql = "select caiCodigo as cai,	round(( (COALESCE(sum(venValor) ,0)+ caiTrocoIn) - ( (select COALESCE(sum(disPreco),0) from caixa join despesa where caiCodigo =  dis_caiCodigo and caiCodigo = cai )\n"
+                + "             				+ (select COALESCE(sum(sanValor),0) as sangria from caixa join sangria where caiCodigo = san_caiCodigo and caiCodigo = cai )\n"
+                + "            		  )- (select sum(devValor) from caixa join devolucao where caiCodigo = dev_caiCodigo  and caiCodigo = cai)\n"
+                + "            		 ),2) as Saldo\n"
+                + "            			from caixa join venda where caiCodigo = ven_caiCodigo and venStatus = 'fechada' and caiCodigo = " + caixa + " and cai_empCodigo = " + emp + ";";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                saldo = rs.getFloat(1);
+                saldo = rs.getFloat(2);
             }
             stmt.close();
 

@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Daniel
  */
-@WebServlet(name = "ListarDespesas", urlPatterns = {"/restaurante_server/ListarDespesas"}, initParams = {
+@WebServlet(name = "ListarDespesas", urlPatterns = {"/loja_server/ListarDespesas"}, initParams = {
     @WebInitParam(name = "nomeUsuario", value = ""),
     @WebInitParam(name = "senha", value = "")})
 public class ListarDespesas extends HttpServlet {
@@ -43,7 +43,7 @@ public class ListarDespesas extends HttpServlet {
         int cod = l.autenticaEmpresa(n,s);
         if (cod > 0) {
             response.setHeader("auth", "1");
-            ArrayList<DespesaBEAN> u = con_des.listarALL();
+            ArrayList<DespesaBEAN> u = con_des.listarALL(cod);
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().println(new Gson().toJson(u));

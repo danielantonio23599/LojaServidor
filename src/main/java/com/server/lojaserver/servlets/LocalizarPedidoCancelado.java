@@ -8,7 +8,7 @@ package com.server.lojaserver.servlets;
 import com.google.gson.Gson;
 import com.server.lojaserver.beans.DevolucaoBEAN;
 import com.server.lojaserver.beans.Produtos;
-import com.server.lojaserver.controle.ControleExcluzao;
+import com.server.lojaserver.controle.ControleDevolucao;
 import com.server.lojaserver.controle.ControleLogin;
 import com.server.lojaserver.controle.ControleProduto;
 import java.io.IOException;
@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 public class LocalizarPedidoCancelado extends HttpServlet {
 
     ControleLogin l = new ControleLogin();
-    ControleExcluzao pro = new ControleExcluzao();
+    ControleDevolucao pro = new ControleDevolucao();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

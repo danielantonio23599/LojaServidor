@@ -7,7 +7,7 @@ package com.server.lojaserver.servlets;
 
 import com.google.gson.Gson;
 import com.server.lojaserver.beans.DevolucaoBEAN;
-import com.server.lojaserver.controle.ControleExcluzao;
+import com.server.lojaserver.controle.ControleDevolucao;
 import com.server.lojaserver.controle.ControleLogin;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,13 +22,13 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Daniel
  */
-@WebServlet(name = "ListarExcluzaoCaixa", urlPatterns = {"/restaurante_server/ListarExcluzaoCaixa"}, initParams = {
+@WebServlet(name = "ListarDevolucaoCaixa", urlPatterns = {"/loja_server/ListarDevolucaoCaixa"}, initParams = {
     @WebInitParam(name = "nomeUsuario", value = ""),
     @WebInitParam(name = "senha", value = "")})
-public class ListarPedidosCanceladosCaixa extends HttpServlet {
+public class ListarDevolucaoCaixa extends HttpServlet {
 
     ControleLogin l = new ControleLogin();
-    ControleExcluzao pro = new ControleExcluzao();
+    ControleDevolucao pro = new ControleDevolucao();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -43,7 +43,7 @@ public class ListarPedidosCanceladosCaixa extends HttpServlet {
         int cod = l.autenticaEmpresa(n,s);
         if (cod > 0) {
             response.setHeader("auth", "1");
-            ArrayList<DevolucaoBEAN> u = pro.listarExclusaoCaixa(cod);
+            ArrayList<DevolucaoBEAN> u = pro.listarDevolucaoCaixa(cod);
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().println(new Gson().toJson(u));

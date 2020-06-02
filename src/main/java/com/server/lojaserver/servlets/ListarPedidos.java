@@ -8,7 +8,7 @@ package com.server.lojaserver.servlets;
 import com.google.gson.Gson;
 import com.server.lojaserver.beans.DevolucaoBEAN;
 import com.server.lojaserver.beans.Pedido;
-import com.server.lojaserver.controle.ControleExcluzao;
+import com.server.lojaserver.controle.ControleDevolucao;
 import com.server.lojaserver.controle.ControleLogin;
 import com.server.lojaserver.controle.ControlePedido;
 import com.server.lojaserver.controle.ControleVenda;

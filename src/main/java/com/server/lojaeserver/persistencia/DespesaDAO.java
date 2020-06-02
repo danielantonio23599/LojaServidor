@@ -25,7 +25,7 @@ public class DespesaDAO {
     }
 
     public boolean adicionar(DespesaBEAN c) {
-        String sql = "insert into despesa(disNome,disDescricao,disPreco) values (?,?,?)";
+        String sql = "insert into despesa(disNome,disDescricao,disPreco,dis_caiCodigo) values (?,?,?,?)";
 
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -33,7 +33,7 @@ public class DespesaDAO {
             stmt.setString(1, c.getNome());
             stmt.setString(2, c.getDescricao());
             stmt.setFloat(3, c.getPreco());
-
+            stmt.setInt(4, c.getCaixa());
             stmt.execute();
             stmt.close();
             return true;
@@ -42,10 +42,10 @@ public class DespesaDAO {
         }
     }
 
-    public ArrayList<DespesaBEAN> listarAll() {
+    public ArrayList<DespesaBEAN> listarAll(int caixa) {
         ArrayList<DespesaBEAN> c = new ArrayList<DespesaBEAN>();
 
-        String sql = "select * from despesa;";
+        String sql = "select * from despesa where dis_caiCodigo = "+caixa+";";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
@@ -55,7 +55,7 @@ public class DespesaDAO {
                 ca.setNome(rs.getString(2));
                 ca.setDescricao(rs.getString(3));
                 ca.setPreco(rs.getFloat(4));
-
+                ca.setCaixa(rs.getInt(5));
                 c.add(ca);
             }
             stmt.close();
@@ -101,58 +101,10 @@ public class DespesaDAO {
             throw new RuntimeException(e);
         }
     }
-
-    public void retirarDespesa(int caixa, int cod) {
-        String sql = "delete from despesa_dia where ded_disCodigo = " + cod + " and ded_caiCodigo = " + caixa + ";";
-        try {
-            PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.execute();
-            stmt.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void adicionarDespesaDia(DespesaBEAN d, int caixa) {
-        String sql = "insert into despesa_dia(ded_disCodigo,ded_caiCodigo) values (?,?)";
-
-        try {
-            PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setInt(1, d.getCodigo());
-            stmt.setInt(2, caixa);
-            stmt.execute();
-            stmt.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public ArrayList<DespesaBEAN> listarDespesaCaixa(int caixa) {
-        String sql = "select * from despesa join despesa_dia where disCodigo = ded_disCodigo and ded_caiCodigo = ? ;";
-        ArrayList<DespesaBEAN> k = new ArrayList<DespesaBEAN>();
-        try {
-            PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setInt(1, caixa);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                DespesaBEAN ca = new DespesaBEAN();
-                ca.setCodigo(rs.getInt(1));
-                ca.setNome(rs.getString(2));
-                ca.setDescricao(rs.getString(3));
-                ca.setPreco(rs.getFloat(4));
-                k.add(ca);
-            }
-            stmt.close();
-            return k;
-        } catch (SQLException e) {
-            throw new RuntimeException();
-        }
-
-    }
-
     public Float getTotalDespesasCaixa(int caixa) {
-        String sql = "select COALESCE(sum(disPreco),0) from despesa join despesa_dia where disCodigo = ded_disCodigo and ded_caiCodigo = ? ;";
+        String sql = "select COALESCE(sum(disPreco),0) from despesa where dis_caiCodigo = ? ;";
         float total = 0;
+        System.out.println(sql);
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setInt(1, caixa);

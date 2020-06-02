@@ -293,20 +293,6 @@ public class ControleVenda {
         return "Sucesso";
     }
 
-    public String excluirPedido(int funcionario, String motivo, String pedido) {
-        ControleExcluzao e = new ControleExcluzao();
-        PedidoDAO p = new PedidoDAO();
-        DevolucaoBEAN pro = new DevolucaoBEAN();
-        pro.setMotivo(motivo);
-        pro.setTime(Time.getTime());
-        pro.setFuncionario(funcionario);
-
-        int ex = e.inserirExclusao(pro);
-        p.excluir(Integer.parseInt(pedido), ex);
-        return "sucesso!";
-
-    }
-
     /*public int abrirVenda(int emp) {
         ControleCaixa cc = new ControleCaixa();
         PedidoDAO p = new PedidoDAO();

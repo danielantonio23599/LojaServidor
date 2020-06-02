@@ -19,6 +19,7 @@ import java.util.ArrayList;
  * @author Daniel
  */
 public class PedidoDAO {
+
     private Connection connection;
 
     public PedidoDAO() {
@@ -76,14 +77,15 @@ public class PedidoDAO {
         }
         return c;
     }
-     public ArrayList<ProdutosGravados> produtosVenda(int venda) {
+
+    public ArrayList<ProdutosGravados> produtosVenda(int venda) {
         ArrayList<ProdutosGravados> c = new ArrayList<ProdutosGravados>();
 
         String sql = "SELECT pedCodigo,ped_proCodigo, proNome,pedQTD,proPreco, (proPreco * pedQTD) "
                 + "FROM banco_loja.produto join banco_loja.pedido join banco_loja.venda"
                 + " where"
                 + " venCodigo = ped_venCodigo and ped_proCodigo = proCodigo and venCodigo = " + venda + " and ped_excCodigo is null;";
-         System.out.println(sql);
+        System.out.println(sql);
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
@@ -108,6 +110,30 @@ public class PedidoDAO {
         PedidoBEAN ca = new PedidoBEAN();
 
         String sql = "select * from pedido where ped_proCodigo = " + produto + " and ped_venCondigo = " + venda + " and pedTime = '" + time + "' and ped_excCodigo is null;";
+        try {
+            PreparedStatement stmt = (PreparedStatement) connection.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                ca.setCodigo(rs.getInt(1));
+                ca.setQuantidade(rs.getFloat(2));
+                ca.setObservacao(rs.getString(3));
+                ca.setExcluzao(rs.getInt(4));
+                ca.setProduto(rs.getInt(5));
+                ca.setVenda(rs.getInt(6));
+
+            }
+            stmt.close();
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return ca;
+    }
+
+    public PedidoBEAN localizar(int pedido) {
+        PedidoBEAN ca = new PedidoBEAN();
+
+        String sql = "select * from pedido where pedCodigo = " + pedido + ";";
         try {
             PreparedStatement stmt = (PreparedStatement) connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
@@ -182,8 +208,9 @@ public class PedidoDAO {
 
     }
 
-    public void excluir(int codigo, int excluzao) {
-        String sql = "update pedido set ped_excCodigo = " + excluzao + " where pedCodigo = " + codigo + " ;";
+    public void devolver(int codigo, int devolucao) {
+        String sql = "update pedido set ped_excCodigo = " + devolucao + " where pedCodigo = " + codigo + " ;";
+        System.out.println(sql);
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.executeUpdate();
@@ -227,5 +254,5 @@ public class PedidoDAO {
         }
         return mesa;
     }
-    
+
 }

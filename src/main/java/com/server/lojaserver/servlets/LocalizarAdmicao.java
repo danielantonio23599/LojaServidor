@@ -9,7 +9,7 @@ import com.google.gson.Gson;
 import com.server.lojaserver.beans.AdmicaoBEAN;
 import com.server.lojaserver.beans.DevolucaoBEAN;
 import com.server.lojaserver.controle.ControleAdmicao;
-import com.server.lojaserver.controle.ControleExcluzao;
+import com.server.lojaserver.controle.ControleDevolucao;
 import com.server.lojaserver.controle.ControleLogin;
 import java.io.IOException;
 import javax.servlet.ServletException;

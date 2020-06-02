@@ -16,6 +16,15 @@ public class Caixa {
     private float saldo;
     private float despesas;
     private float sangria;
+    private float devolucao;
+
+    public float getDevolucao() {
+        return devolucao;
+    }
+
+    public void setDevolucao(float devolucao) {
+        this.devolucao = devolucao;
+    }
 
     public int getCaixa() {
         return caixa;

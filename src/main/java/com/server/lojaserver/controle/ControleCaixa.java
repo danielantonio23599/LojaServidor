@@ -77,6 +77,7 @@ public class ControleCaixa {
     public Caixa listarValoresCaixa(int empresa) {
         ControleDespesa d = new ControleDespesa();
         ControleSangria s = new ControleSangria();
+        ControleDevolucao e = new ControleDevolucao();
         int caixa = getCaixa(empresa);
         Caixa c = new Caixa();
         c.setCaixa(caixa);
@@ -84,6 +85,7 @@ public class ControleCaixa {
         c.setSangria(s.getTotalSangriasCaixa(empresa));
         c.setSaldo(Float.parseFloat(getSaldoAtual(empresa)));
         c.setFaturamento(Float.parseFloat(getTotalVendido(empresa)));
+        c.setDevolucao(e.getTotalDevolucaoCaixa(caixa));
         return c;
     }
 }

@@ -15,15 +15,16 @@ import java.util.ArrayList;
  * @author Daniel
  */
 public class ControleDespesa {
-    private DespesaDAO d = new DespesaDAO();
-    private ControleCaixa c = new ControleCaixa();
+   final private DespesaDAO d = new DespesaDAO();
+    final private ControleCaixa c = new ControleCaixa();
 
-    public ArrayList<DespesaBEAN> listarALL() {
-        ArrayList<DespesaBEAN> t = d.listarAll();
+    public ArrayList<DespesaBEAN> listarALL(int emp) {        
+        ArrayList<DespesaBEAN> t = d.listarAll(c.getCaixa(emp));
         return t;
     }
 
-    public String adicionar(DespesaBEAN despesa) {
+    public String adicionar(DespesaBEAN despesa, int emp) {
+        despesa.setCaixa(c.getCaixa(emp));
         d.adicionar(despesa);
         return "Cadastro Realizado com SUCESSO!!";
     }
@@ -33,26 +34,6 @@ public class ControleDespesa {
             this.d.excluir(d.getCodigo());
         }
         return "Excluzão realizada com SUCESSO!!";
-    }
-
-    public String adicionarDespesaDia(ArrayList<DespesaBEAN> dadosIncluir, int empresa) {
-        for (DespesaBEAN d : dadosIncluir) {
-            this.d.adicionarDespesaDia(d, c.getCaixa(empresa));
-        }
-        return "Cadastro Realizado com SUCESSO!!";
-
-    }
-
-    public String retirarDespesaDia(ArrayList<DespesaBEAN> dadosIncluir, int empresa) {
-        for (DespesaBEAN d : dadosIncluir) {
-            this.d.retirarDespesa(c.getCaixa(empresa), d.getCodigo());
-        }
-        return "SUCESSO!!";
-
-    }
-
-    public ArrayList<DespesaBEAN> listarDespesaDia(int empresa) {
-        return d.listarDespesaCaixa(c.getCaixa(empresa));
     }
 
     public Float getTotalDespesasCaixa(int empresa) {
