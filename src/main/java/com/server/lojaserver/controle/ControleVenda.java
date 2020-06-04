@@ -193,7 +193,6 @@ public class ControleVenda {
         return ven.listarVendasPorConsulta(emp, texto);
     }
 
-
     public float getValorVenda(String venda, int emp) {
         VendaDAO ven = new VendaDAO();
         return ven.getValorVenda(Integer.parseInt(venda));
@@ -356,5 +355,20 @@ public class ControleVenda {
             pedido = p.adicionar(venda);
         }
         return pedido;
+    }
+
+    String adicionarClienteVenda(int venda, int cliente) {
+        VendaDAO ven = new VendaDAO();
+        boolean aux = ven.adicionarClienteVenda(venda, cliente);
+        if (aux) {
+            return "Sucesso";
+        } else {
+            return "ERRO";
+        }
+    }
+
+    public Venda getVenda(int venda) {
+        VendaDAO ven = new VendaDAO();
+        return ven.buscarVenda(venda);
     }
 }

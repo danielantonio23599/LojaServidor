@@ -24,6 +24,16 @@ public class VendaBEAN {
     private String status;
     private int entrega;
     private int cliente;
+    private String cliNome;
+
+    public String getCliNome() {
+        return cliNome;
+    }
+
+    public void setCliNome(String cliNome) {
+        this.cliNome = cliNome;
+    }
+    
 
     public float getValorFin() {
         return valorFin;

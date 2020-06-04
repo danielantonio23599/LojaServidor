@@ -115,6 +115,36 @@ public class VendaDAO {
         return v;
     }
 
+    public Venda buscarVenda(int venda) {
+        Venda v = new Venda();
+        String sql = "select venCodigo as venda ,venTime, venValor, venCusto, venStatus, venPagamento,\n"
+                + "venDesconto,venFrete,venValorFin, \n"
+                + "(select cliNome from cliente join venda where cliCodigo = ven_cliCodigo and venCodigo = venda)\n"
+                + " from venda  Where venCodigo = " + venda + ";";
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                v.setCodigo(rs.getInt(1));
+                v.setHora(rs.getString(2));
+                v.setValor(rs.getFloat(3));
+                v.setCusto(rs.getFloat(4));
+                v.setStatus(rs.getString(5));
+                v.setPagamento(rs.getString(6));
+                v.setDesconto(rs.getFloat(7));
+                v.setFrete(rs.getFloat(8));
+                v.setValorFinal(rs.getInt(9));
+                v.setCliente(rs.getString(10));
+
+            }
+            stmt.close();
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return v;
+    }
+
     public Float getCustoVenda(int venda) {
         float valor = 0;
 
@@ -546,6 +576,24 @@ public class VendaDAO {
             System.out.println(e.getMessage());
         }
         return total + "";
+    }
+
+    public boolean adicionarClienteVenda(int venda, int cliente) {
+        String sql = "update venda set ven_cliCodigo = " + cliente + "  where venCodigo = " + venda + " ;";
+        System.out.println(sql);
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+
+            int l = stmt.executeUpdate();
+            stmt.close();
+            if (l > 0) {
+                System.out.println("Foram alterados " + l + " linhas");
+                return true;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return false;
     }
 
 }
