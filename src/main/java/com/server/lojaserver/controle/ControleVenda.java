@@ -50,6 +50,7 @@ public class ControleVenda {
         System.out.println(v.getValorFin());
         venda.setValorFin(v.getValorFin());
         venda.setFrete(v.getFrete());
+        venda.setStatus(v.getStatus());
         // buscar custo de venda....
         venda.setCusto(getCustoVenda(v.getCodigo()));
         ven.atualizaVenda(venda);
@@ -59,15 +60,34 @@ public class ControleVenda {
     public File atualizaVendaNota(VendaBEAN v, int emp, ServletContext contexto) {
         ControleRelatorio r = new ControleRelatorio();
         VendaDAO ven = new VendaDAO();
-        float des = v.getDesconto();
         VendaBEAN venda = listarVenda(v.getCodigo(), emp);
         venda.setPagamento(v.getPagamento());
         venda.setValor(v.getValor());
-        int cod = venda.getCodigo();
-        venda.setDesconto(des);
+        venda.setDesconto(v.getDesconto());
+        System.out.println(v.getValorFin());
+        venda.setValorFin(v.getValorFin());
+        venda.setFrete(v.getFrete());
+        venda.setStatus(v.getStatus());
+        // buscar custo de venda....
+        venda.setCusto(getCustoVenda(v.getCodigo()));
         ven.atualizaVenda(venda);
-        System.out.println(cod);
-        return r.geraRelatorioVenda(contexto, emp, cod);
+        return r.geraRelatorioVenda(contexto, emp, v.getCodigo());
+    }
+
+    public File atualizaVendaCupom(VendaBEAN v, int emp, ServletContext contexto) {
+        ControleRelatorio r = new ControleRelatorio();
+        VendaDAO ven = new VendaDAO();
+        VendaBEAN venda = listarVenda(v.getCodigo(), emp);
+        venda.setPagamento(v.getPagamento());
+        venda.setValor(v.getValor());
+        venda.setDesconto(v.getDesconto());
+        System.out.println(v.getValorFin());
+        venda.setValorFin(v.getValorFin());
+        venda.setFrete(v.getFrete());
+        // buscar custo de venda....
+        venda.setCusto(getCustoVenda(v.getCodigo()));
+        ven.atualizaVenda(venda);
+        return r.geraRelatorioCupom(contexto, emp, v.getCodigo());
     }
 
     public int abrirMesa(VendaBEAN v, int emp) {
@@ -193,9 +213,14 @@ public class ControleVenda {
         return ven.listarVendasPorConsulta(emp, texto);
     }
 
-    public float getValorVenda(String venda, int emp) {
+    public float getValorFinVenda(int venda, int emp) {
         VendaDAO ven = new VendaDAO();
-        return ven.getValorVenda(Integer.parseInt(venda));
+        return ven.getValorFinVenda(venda);
+    }
+
+    public void atualizaValorFinVenda(int venda, float valor) {
+        VendaDAO ven = new VendaDAO();
+        ven.atualizaValorFinVenda(venda, valor);
     }
 
     public ArrayList<ProdutosGravados> listarProdutosVenda(String venda) {

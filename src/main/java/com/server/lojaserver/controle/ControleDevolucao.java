@@ -23,6 +23,7 @@ public class ControleDevolucao {
     public String inserirDevolucao(DevolucaoBEAN pro, int pedido, int emp) {
         ControleCaixa cc = new ControleCaixa();
         ControlePedido cp = new ControlePedido();
+        ControleVenda v = new ControleVenda();
         PedidoBEAN p = cp.listarPedido(pedido);
         if (p.getQuantidade() >= pro.getQuantidade()) {
             pro.setCaixa(cc.getCaixa(emp));
@@ -30,7 +31,8 @@ public class ControleDevolucao {
             ControleProduto proCon = new ControleProduto();
             proCon.aumentaEstoque(p.getProduto(), (pro.getQuantidade()));
             cp.devolver(pedido, dev);
-
+            float valor = v.getValorFinVenda(p.getVenda(), emp);
+            v.atualizaValorFinVenda(p.getVenda(), valor);
             return "Produto Devolvido Com Sucesso!";
         } else {
             return "Erro de Redundancia!";

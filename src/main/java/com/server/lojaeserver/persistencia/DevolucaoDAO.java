@@ -56,7 +56,7 @@ public class DevolucaoDAO {
 
         String sql = "select devCodigo,devMotivo,devTime,devValor,devQTD,dev_caiCodigo,proNome\n"
                 + "                  from  caixa join devolucao join pedido join produto where\n"
-                + "                  caiCodigo = dev_caiCodigo and devCodigo = ped_excCodigo and proCodigo = ped_proCodigo and ped_venCodigo = " + venda + " order by devTime;";
+                + "                  caiCodigo = dev_caiCodigo and devCodigo = ped_devCodigo and proCodigo = ped_proCodigo and ped_venCodigo = " + venda + " order by devTime;";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
@@ -108,7 +108,7 @@ public class DevolucaoDAO {
 
         String sql = "select devCodigo,devMotivo,devTime,devValor,devQTD,dev_caiCodigo,proNome\n"
                 + "                  from  caixa join devolucao join pedido join produto where\n"
-                + "                  caiCodigo = dev_caiCodigo and devCodigo = ped_excCodigo and proCodigo = ped_proCodigo and caiCodigo = " + caixa + "  order by devTime;";
+                + "                  caiCodigo = dev_caiCodigo and devCodigo = ped_devCodigo and proCodigo = ped_proCodigo and caiCodigo = " + caixa + "  order by devTime;";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
@@ -135,7 +135,7 @@ public class DevolucaoDAO {
         float total = 0;
         String sql = "select coalesce(sum(devQTD*proPreco),0)\n"
                 + "                  from  caixa join devolucao join pedido join produto where\n"
-                + "                  caiCodigo = dev_caiCodigo and devCodigo = ped_excCodigo and proCodigo = ped_proCodigo and caiCodigo = " + caixa + " group by caiCodigo;";
+                + "                  caiCodigo = dev_caiCodigo and devCodigo = ped_devCodigo and proCodigo = ped_proCodigo and caiCodigo = " + caixa + " group by caiCodigo;";
         System.out.println(sql);
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -175,7 +175,7 @@ public class DevolucaoDAO {
         float total = 0;
         String sql = "select coalesce((pedQTD*proPreco),0)\n"
                 + "                  from  caixa join devolucao join pedido join produto where\n"
-                + "                  caiCodigo = dev_caiCodigo and devCodigo = ped_excCodigo and proCodigo = ped_proCodigo and caiCodigo = " + caixa + "group by caiCodigo;";
+                + "                  caiCodigo = dev_caiCodigo and devCodigo = ped_devCodigo and proCodigo = ped_proCodigo and caiCodigo = " + caixa + "group by caiCodigo;";
 
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);

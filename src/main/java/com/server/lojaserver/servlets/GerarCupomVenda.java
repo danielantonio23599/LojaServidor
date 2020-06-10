@@ -12,6 +12,7 @@ import com.server.lojaserver.beans.VendaBEAN;
 import com.server.lojaserver.controle.ControleFuncionario;
 import com.server.lojaserver.controle.ControleLogin;
 import com.server.lojaserver.controle.ControleProduto;
+import com.server.lojaserver.controle.ControleRelatorio;
 import com.server.lojaserver.controle.ControleVenda;
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,14 +30,14 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Daniel
  */
-@WebServlet(name = "AtualizaVendaNota", urlPatterns = {"/loja_server/AtualizaVendaNota"}, initParams = {
+@WebServlet(name = "GerarCupomVenda", urlPatterns = {"/loja_server/GerarCupomVenda"}, initParams = {
     @WebInitParam(name = "venda", value = ""),
     @WebInitParam(name = "nomeUsuario", value = ""),
     @WebInitParam(name = "senha", value = "")})
-public class AtulizarVendaNota extends HttpServlet {
+public class GerarCupomVenda extends HttpServlet {
 
     ControleLogin l = new ControleLogin();
-    ControleVenda pro = new ControleVenda();
+    ControleRelatorio pro = new ControleRelatorio();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -53,8 +54,8 @@ public class AtulizarVendaNota extends HttpServlet {
             ServletContext contexto = request.getServletContext();
             response.setHeader("auth", "1");
             String str = new String(request.getParameter("venda").getBytes("iso-8859-1"), "UTF-8");
-            VendaBEAN c = new GsonBuilder().setDateFormat("dd-MM-yyyy HH:mm:ss").create().fromJson(str, VendaBEAN.class);
-            File filePath = pro.atualizaVendaNota(c, cod, contexto);
+            int venda = Integer.parseInt(str);
+            File filePath = pro.geraRelatorioCupom(contexto, cod, venda);
             if (filePath != null) {
                 response.setHeader("nome", filePath.getName());
                 File downloadFile = filePath;

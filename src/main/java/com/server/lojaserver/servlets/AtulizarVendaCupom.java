@@ -29,11 +29,11 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Daniel
  */
-@WebServlet(name = "AtualizaVendaNota", urlPatterns = {"/loja_server/AtualizaVendaNota"}, initParams = {
+@WebServlet(name = "AtualizaVendaCupom", urlPatterns = {"/loja_server/AtualizaVendaCupom"}, initParams = {
     @WebInitParam(name = "venda", value = ""),
     @WebInitParam(name = "nomeUsuario", value = ""),
     @WebInitParam(name = "senha", value = "")})
-public class AtulizarVendaNota extends HttpServlet {
+public class AtulizarVendaCupom extends HttpServlet {
 
     ControleLogin l = new ControleLogin();
     ControleVenda pro = new ControleVenda();
@@ -54,7 +54,7 @@ public class AtulizarVendaNota extends HttpServlet {
             response.setHeader("auth", "1");
             String str = new String(request.getParameter("venda").getBytes("iso-8859-1"), "UTF-8");
             VendaBEAN c = new GsonBuilder().setDateFormat("dd-MM-yyyy HH:mm:ss").create().fromJson(str, VendaBEAN.class);
-            File filePath = pro.atualizaVendaNota(c, cod, contexto);
+            File filePath = pro.atualizaVendaCupom(c, cod, contexto);
             if (filePath != null) {
                 response.setHeader("nome", filePath.getName());
                 File downloadFile = filePath;

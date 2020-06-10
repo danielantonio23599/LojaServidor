@@ -59,7 +59,7 @@ public class PedidoDAO {
                 + "                FROM empresa join caixa join venda join pedido join produto\n"
                 + "                where\n"
                 + "                empCodigo = cai_empCodigo and caiCodigo = ven_caiCodigo and venCodigo = ped_venCodigo and ped_proCodigo = proCodigo\n"
-                + "                and caiCodigo=" + caixa + " and empCodigo = " + empresa + " and venStatus = 'aberta' and ped_excCodigo is null;";
+                + "                and caiCodigo=" + caixa + " and empCodigo = " + empresa + " and venStatus = 'aberta' and ped_devCodigo is null;";
         try {
             PreparedStatement stmt = (PreparedStatement) connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
@@ -84,7 +84,7 @@ public class PedidoDAO {
         String sql = "SELECT pedCodigo,ped_proCodigo, proNome,pedQTD,proPreco, (proPreco * pedQTD) "
                 + "FROM banco_loja.produto join banco_loja.pedido join banco_loja.venda"
                 + " where"
-                + " venCodigo = ped_venCodigo and ped_proCodigo = proCodigo and venCodigo = " + venda + " and ped_excCodigo is null;";
+                + " venCodigo = ped_venCodigo and ped_proCodigo = proCodigo and venCodigo = " + venda + " and ped_devCodigo is null;";
         System.out.println(sql);
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -109,7 +109,7 @@ public class PedidoDAO {
     public PedidoBEAN localizar(int produto, int venda, String time) {
         PedidoBEAN ca = new PedidoBEAN();
 
-        String sql = "select * from pedido where ped_proCodigo = " + produto + " and ped_venCondigo = " + venda + " and pedTime = '" + time + "' and ped_excCodigo is null;";
+        String sql = "select * from pedido where ped_proCodigo = " + produto + " and ped_venCondigo = " + venda + " and pedTime = '" + time + "' and ped_devCodigo is null;";
         try {
             PreparedStatement stmt = (PreparedStatement) connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
@@ -209,7 +209,7 @@ public class PedidoDAO {
     }
 
     public void devolver(int codigo, int devolucao) {
-        String sql = "update pedido set ped_excCodigo = " + devolucao + " where pedCodigo = " + codigo + " ;";
+        String sql = "update pedido set ped_devCodigo = " + devolucao + " where pedCodigo = " + codigo + " ;";
         System.out.println(sql);
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);

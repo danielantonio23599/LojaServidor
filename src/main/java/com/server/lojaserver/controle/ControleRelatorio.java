@@ -6,13 +6,23 @@
 package com.server.lojaserver.controle;
 
 import com.server.lojaeserver.persistencia.ConnectionFactory;
+import com.server.lojaserver.beans.EmpresaBEAN;
 import com.server.lojaserver.util.GeradorRelatorio;
+import com.server.lojaserver.util.ManipularImagem;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;
+import javax.swing.ImageIcon;
 import net.sf.jasperreports.engine.JasperPrint;
 
 /**
@@ -125,18 +135,55 @@ public class ControleRelatorio {
         return print;
     }
 
-    public File geraRelatorioVenda(ServletContext contexto, int empresa, int venda) {
-        String jrxml = contexto.getRealPath("/relatorios/relatorio_venda.jrxml");
+    public File geraRelatorioCupom(ServletContext contexto, int empresa, int venda) {
+        String jrxml = contexto.getRealPath("/relatorios/relatorio_venda_loja.jrxml");
         //exibe no terminal o local onde o arquivo se encontra
         // prepara parâmetros
         Map<String, Object> parametros = new HashMap<>();
         System.out.println(venda);
         parametros.put("empresa", empresa);
         parametros.put("venda", venda);
+
         // abre conexão com o banco
         // gera relatório
         GeradorRelatorio gerador = new GeradorRelatorio(conexao, contexto);
-        File print = gerador.geraPdfDownload(jrxml, "relatorio_venda", parametros);
+        File print = gerador.geraPdfDownload(jrxml, "relatorio_venda_loja", parametros);
+        try {
+            conexao.createStatement().close();
+        } catch (SQLException ex) {
+            System.out.println("erro inicio : " + ex.getMessage());
+        }
+        return print;
+    }
+
+    public File geraRelatorioVenda(ServletContext contexto, int empresa, int venda) {
+        String jrxml = contexto.getRealPath("/relatorios/venda_nota.jrxml");
+        //exibe no terminal o local onde o arquivo se encontra
+        // prepara parâmetros
+        Map<String, Object> parametros = new HashMap<>();
+        System.out.println(venda);
+        parametros.put("empresa", empresa);
+        parametros.put("venda", venda);
+        //buscar dados empresa
+        ControleEmpresa ce = new ControleEmpresa();
+        EmpresaBEAN e = ce.listarUm(empresa);
+        if (e.getLogo() != null) {
+            InputStream input = new ByteArrayInputStream(e.getLogo());
+            try {
+                BufferedImage imagem = ImageIO.read(input);
+                ImageIcon gto = new ImageIcon(imagem);
+                parametros.put("logo", gto.getImage());
+            } catch (IOException ex) {
+                System.out.println("ERRO: " + ex.getMessage());
+                return null;
+            }
+
+        }
+
+        // abre conexão com o banco
+        // gera relatório
+        GeradorRelatorio gerador = new GeradorRelatorio(conexao, contexto);
+        File print = gerador.geraPdfDownload(jrxml, "venda_nota", parametros);
         try {
             conexao.createStatement().close();
         } catch (SQLException ex) {

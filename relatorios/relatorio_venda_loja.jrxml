@@ -1,17 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.12.2.final using JasperReports Library version 6.12.2-75c5e90a222ab406e416cbf590a5397028a52de3  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="relatorio_venda" pageWidth="210" pageHeight="328" columnWidth="170" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="21" uuid="e6635d9d-2360-4f50-86bc-416afc3e4c15">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="relatorio_venda_loja" pageWidth="210" pageHeight="331" columnWidth="170" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="2" isIgnorePagination="true" uuid="e6635d9d-2360-4f50-86bc-416afc3e4c15">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Restaurante"/>
-	<property name="com.jaspersoft.studio.unit." value="mm"/>
-	<property name="com.jaspersoft.studio.unit.pageHeight" value="mm"/>
-	<property name="com.jaspersoft.studio.unit.pageWidth" value="mm"/>
-	<property name="com.jaspersoft.studio.unit.topMargin" value="mm"/>
-	<property name="com.jaspersoft.studio.unit.bottomMargin" value="mm"/>
-	<property name="com.jaspersoft.studio.unit.leftMargin" value="mm"/>
-	<property name="com.jaspersoft.studio.unit.rightMargin" value="mm"/>
-	<property name="com.jaspersoft.studio.unit.columnWidth" value="mm"/>
-	<property name="com.jaspersoft.studio.unit.columnSpacing" value="mm"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Loja_banco"/>
 	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
 		<box>
 			<pen lineWidth="0.5" lineColor="#000000"/>
@@ -39,17 +30,44 @@
 			<rightPen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
+	<style name="Table 1_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table 1_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table 1_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
 	<subDataset name="Dataset1" uuid="85edd479-90c9-4eb6-9521-a94ff6ef5be0">
 		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Restaurante"/>
 		<parameter name="venda" class="java.lang.Integer"/>
 		<queryString language="SQL">
-			<![CDATA[SELECT venMesa, pedCodigo, proNome,pedQTD,proPreco,round((proPreco * pedQTD),2) as total
+			<![CDATA[SELECT venCodigo, pedCodigo, proNome,pedQTD,proPreco,round((proPreco * pedQTD),2) as total
 FROM produto join pedido join venda
-WHERE venCodigo = ped_venCodigo and ped_proCodigo = proCodigo and venCodigo = $P{venda} and ped_excCodigo is null;]]>
+WHERE venCodigo = ped_venCodigo and ped_proCodigo = proCodigo and venCodigo =  $P{venda} ;]]>
 		</queryString>
-		<field name="venMesa" class="java.lang.Integer">
-			<property name="com.jaspersoft.studio.field.label" value="venMesa"/>
+		<field name="venCodigo" class="java.lang.Integer">
+			<property name="com.jaspersoft.studio.field.label" value="venCodigo"/>
 			<property name="com.jaspersoft.studio.field.tree.path" value="venda"/>
 		</field>
 		<field name="pedCodigo" class="java.lang.Integer">
@@ -72,21 +90,56 @@ WHERE venCodigo = ped_venCodigo and ped_proCodigo = proCodigo and venCodigo = $P
 			<property name="com.jaspersoft.studio.field.label" value="total"/>
 		</field>
 	</subDataset>
+	<subDataset name="Dataset2" uuid="30c7c468-f931-435a-8ca7-e1d23c23b1f9">
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Loja_banco"/>
+		<parameter name="venda" class="java.lang.Integer"/>
+		<queryString language="SQL">
+			<![CDATA[SELECT ped_venCodigo, pedCodigo, proNome,devQTD,proPreco,devValor
+FROM produto join pedido join devolucao
+WHERE devCodigo = ped_devCodigo and ped_proCodigo = proCodigo and ped_venCodigo = $P{venda} ;]]>
+		</queryString>
+		<field name="ped_venCodigo" class="java.lang.Integer">
+			<property name="com.jaspersoft.studio.field.label" value="ped_venCodigo"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="pedido"/>
+		</field>
+		<field name="pedCodigo" class="java.lang.Integer">
+			<property name="com.jaspersoft.studio.field.label" value="pedCodigo"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="pedido"/>
+		</field>
+		<field name="proNome" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.label" value="proNome"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="produto"/>
+		</field>
+		<field name="devQTD" class="java.lang.Float">
+			<property name="com.jaspersoft.studio.field.label" value="devQTD"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="devolucao"/>
+		</field>
+		<field name="proPreco" class="java.lang.Float">
+			<property name="com.jaspersoft.studio.field.label" value="proPreco"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="produto"/>
+		</field>
+		<field name="devValor" class="java.lang.Float">
+			<property name="com.jaspersoft.studio.field.label" value="devValor"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="devolucao"/>
+		</field>
+	</subDataset>
 	<parameter name="empresa" class="java.lang.Integer"/>
 	<parameter name="venda" class="java.lang.Integer"/>
 	<queryString language="SQL">
 		<![CDATA[SELECT empNomeFantazia,empLogradouro,
 empBairro,empNumero,empCidade,empUF,
 empTelefone,
-venMesa,
-venCodigo,
-venValor,
+venCodigo as venda,
+venFrete,
+(select cliNome from cliente join venda where cliCodigo = ven_cliCodigo and venCodigo = venda) as cliente,
 venDesconto,
-  round((SELECT SUM(pedQtd * propreco) from pedido join produto where proCodigo = ped_proCodigo and ped_venCodigo = $P{venda} and ped_excCodigo is null  order by ped_venCodigo) ,2) as total,
-   round((SELECT SUM(pedQtd * propreco) + (SUM(pedQtd * propreco)*0.10)  from pedido join produto where proCodigo = ped_proCodigo and ped_venCodigo = $P{venda} and ped_excCodigo is null  order by ped_venCodigo) ,2) as valor
+venValor,
+round((SELECT SUM(pedQtd * propreco) from pedido join produto where proCodigo = ped_proCodigo and ped_venCodigo = venCodigo) ,2) as total,
+venValorFin
  FROM empresa join caixa join venda where 
  empCodigo = cai_empCodigo and caiCodigo = ven_caiCodigo 
- and empCodigo = $P{empresa} and venCodigo = $P{venda}]]>
+ and empCodigo =$P{empresa} and venCodigo = $P{venda}]]>
 	</queryString>
 	<field name="empNomeFantazia" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.label" value="empNomeFantazia"/>
@@ -116,27 +169,31 @@ venDesconto,
 		<property name="com.jaspersoft.studio.field.label" value="empTelefone"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="empresa"/>
 	</field>
-	<field name="venMesa" class="java.lang.Integer">
-		<property name="com.jaspersoft.studio.field.label" value="venMesa"/>
+	<field name="venda" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="venda"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="venda"/>
 	</field>
-	<field name="venCodigo" class="java.lang.Integer">
-		<property name="com.jaspersoft.studio.field.label" value="venCodigo"/>
+	<field name="venFrete" class="java.lang.Float">
+		<property name="com.jaspersoft.studio.field.label" value="venFrete"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="venda"/>
+	</field>
+	<field name="cliente" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="cliente"/>
+	</field>
+	<field name="venDesconto" class="java.lang.Float">
+		<property name="com.jaspersoft.studio.field.label" value="venDesconto"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="venda"/>
 	</field>
 	<field name="venValor" class="java.lang.Float">
 		<property name="com.jaspersoft.studio.field.label" value="venValor"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="venda"/>
 	</field>
-	<field name="venDesconto" class="java.lang.Float">
-		<property name="com.jaspersoft.studio.field.label" value="venDesconto"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="venda"/>
-	</field>
 	<field name="total" class="java.lang.Double">
 		<property name="com.jaspersoft.studio.field.label" value="total"/>
 	</field>
-	<field name="valor" class="java.lang.Double">
-		<property name="com.jaspersoft.studio.field.label" value="valor"/>
+	<field name="venValorFin" class="java.lang.Float">
+		<property name="com.jaspersoft.studio.field.label" value="venValorFin"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="venda"/>
 	</field>
 	<background>
 		<band splitType="Stretch"/>
@@ -155,7 +212,7 @@ venDesconto,
 				<textElement textAlignment="Center" verticalAlignment="Top">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{empLogradouro}+" , "+$F{empBairro}+" ,"+$F{empNumero}+","+$F{empCidade}+" - "+$F{empUF}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{empLogradouro}+" , "+$F{empNumero}+" ,"+$F{empBairro}+","+$F{empCidade}+" - "+$F{empUF}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="30" width="170" height="17" uuid="af437283-5fcc-4293-8404-de129683203f"/>
@@ -188,12 +245,12 @@ venDesconto,
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["MESA : "+$F{venMesa}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Cliente : "+$F{cliente}]]></textFieldExpression>
 			</textField>
 		</band>
 	</title>
 	<pageHeader>
-		<band height="47" splitType="Stretch">
+		<band height="41" splitType="Stretch">
 			<componentElement>
 				<reportElement x="-11" y="-3" width="190" height="40" uuid="4cc65698-89aa-4486-a62b-df6f1c446a18">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
@@ -338,11 +395,164 @@ venDesconto,
 			</componentElement>
 		</band>
 	</pageHeader>
-	<summary>
-		<band height="148" splitType="Stretch">
+	<columnHeader>
+		<band height="59">
+			<componentElement>
+				<reportElement x="-14" y="12" width="200" height="40" uuid="2300cb79-5d9f-4f4a-b695-843412c43c90">
+					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+					<property name="com.jaspersoft.studio.table.style.table_header" value="Table 1_TH"/>
+					<property name="com.jaspersoft.studio.table.style.column_header" value="Table 1_CH"/>
+					<property name="com.jaspersoft.studio.table.style.detail" value="Table 1_TD"/>
+				</reportElement>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="Dataset2" uuid="32daadd9-4ee2-4af1-9a84-ef50a75f011c">
+						<datasetParameter name="venda">
+							<datasetParameterExpression><![CDATA[$P{venda}]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:column width="33" uuid="8bf36227-d9f7-4379-a6bf-37a9a6ed909c">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
+						<jr:columnHeader style="Table 1_CH" height="20">
+							<staticText>
+								<reportElement x="0" y="0" width="33" height="20" uuid="8cd24f79-9c83-43c8-b019-170b706d2d59"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="7"/>
+								</textElement>
+								<text><![CDATA[venda]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="Table 1_TD" height="20">
+							<textField>
+								<reportElement x="0" y="0" width="33" height="20" uuid="42ca734e-d70b-464f-92ba-c70385dd9efa"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="SansSerif" size="6"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{ped_venCodigo}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="33" uuid="2967f8ff-7e9c-4e00-ad12-fb5b023153be">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
+						<jr:columnHeader style="Table 1_CH" height="20">
+							<staticText>
+								<reportElement x="0" y="0" width="33" height="20" uuid="f56d8377-89b8-447b-b371-8035abf35623"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="7"/>
+								</textElement>
+								<text><![CDATA[pedido]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="Table 1_TD" height="20">
+							<textField>
+								<reportElement x="0" y="0" width="33" height="20" uuid="09d584ce-6590-498c-aed6-1090bf3e8e67"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="SansSerif" size="6"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{pedCodigo}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="33" uuid="8fc52bda-76ae-442b-bf05-e0f5f31552f1">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
+						<jr:columnHeader style="Table 1_CH" height="20">
+							<staticText>
+								<reportElement x="0" y="0" width="33" height="20" uuid="b34dc38d-0d13-4e33-9277-6b9bba21a90f"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="7"/>
+								</textElement>
+								<text><![CDATA[Produto]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="Table 1_TD" height="20">
+							<textField>
+								<reportElement x="0" y="0" width="33" height="20" uuid="39baf10b-7662-4fec-84ec-777b7d7ac80e"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="SansSerif" size="6"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{proNome}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="33" uuid="9b102387-f3b5-4eed-8f29-f371dcce6747">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
+						<jr:columnHeader style="Table 1_CH" height="20">
+							<staticText>
+								<reportElement x="0" y="0" width="33" height="20" uuid="81f77589-e15f-47d8-8eb2-10bf8c4e1364"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="7"/>
+								</textElement>
+								<text><![CDATA[QTD]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="Table 1_TD" height="20">
+							<textField>
+								<reportElement x="0" y="0" width="33" height="20" uuid="cb4b6971-b68e-4b02-a723-5e94df721dc8"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="SansSerif" size="6"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{devQTD}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="33" uuid="98701775-2cc7-41be-909b-fdc9dc949b47">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
+						<jr:columnHeader style="Table 1_CH" height="20">
+							<staticText>
+								<reportElement x="0" y="0" width="33" height="20" uuid="2cbfd9f9-2cea-454d-b59d-a3e3bbd4689b"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="7"/>
+								</textElement>
+								<text><![CDATA[Vlr Unt]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="Table 1_TD" height="20">
+							<textField>
+								<reportElement x="0" y="0" width="33" height="20" uuid="6d2f631e-4b0c-4f1e-b8cf-599237a4caef"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="SansSerif" size="6"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{proPreco}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="33" uuid="c6660c90-773b-4ac7-90e0-c1fc9bd82a19">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column6"/>
+						<jr:columnHeader style="Table 1_CH" height="20">
+							<staticText>
+								<reportElement x="0" y="0" width="33" height="20" uuid="43a8b251-ba17-4533-8b5f-650b7a108080"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="7"/>
+								</textElement>
+								<text><![CDATA[Total]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="Table 1_TD" height="20">
+							<textField>
+								<reportElement x="0" y="0" width="33" height="20" uuid="607b0dbf-b0e6-4129-8a60-f320a1939df1"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="SansSerif" size="6"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{devValor}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
 			<staticText>
-				<reportElement x="-19" y="-14" width="210" height="20" uuid="086e320f-a40f-4a66-9e22-57693299c0ea"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<reportElement x="-12" y="0" width="124" height="19" uuid="cd2199e8-703c-4aab-a770-ffcc6efbb0f4"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Produtos Devolvidos]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<summary>
+		<band height="126" splitType="Stretch">
+			<staticText>
+				<reportElement x="-19" y="-11" width="210" height="20" uuid="086e320f-a40f-4a66-9e22-57693299c0ea"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
 					<font isBold="false"/>
 				</textElement>
 				<text><![CDATA[__________________________________________]]></text>
@@ -355,69 +565,71 @@ venDesconto,
 				<textFieldExpression><![CDATA["DESCONTO: R$ "+$F{venDesconto}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="85" y="2" width="94" height="16" uuid="a5721e95-3398-464e-a0e7-59d851a20f85"/>
+				<reportElement x="85" y="1" width="94" height="16" uuid="a5721e95-3398-464e-a0e7-59d851a20f85"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA["SUB TOTAL : R$ "+$F{total}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="-20" y="6" width="210" height="14" uuid="2e61a4f6-35fc-4d6d-b073-b6252b100000"/>
+				<reportElement x="-20" y="21" width="210" height="14" uuid="2e61a4f6-35fc-4d6d-b073-b6252b100000"/>
 				<textElement textAlignment="Center" verticalAlignment="Bottom">
 					<font size="10" isBold="false"/>
 				</textElement>
 				<text><![CDATA[_______________________________________________]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="-16" y="19" width="201" height="16" uuid="91352a43-8b2f-45f0-9900-4b20a4636da8"/>
-				<textElement textAlignment="Right" verticalAlignment="Bottom">
-					<font isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA["TOTAL + 10% : R$ "+($F{valor})]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="-15" y="62" width="100" height="20" uuid="a4133c16-3839-42cb-8112-a2c72059c630"/>
+				<reportElement x="-15" y="56" width="100" height="20" uuid="a4133c16-3839-42cb-8112-a2c72059c630"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Data: "+new SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date())]]></textFieldExpression>
 			</textField>
 			<textField pattern="HH:mm">
-				<reportElement x="85" y="62" width="100" height="20" uuid="1e4b8d15-2f78-4779-8d01-2975a0aa9b54"/>
+				<reportElement x="85" y="56" width="100" height="20" uuid="1e4b8d15-2f78-4779-8d01-2975a0aa9b54"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Hora: " +new SimpleDateFormat("HH:mm:ss").format(new java.util.Date())]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="35" y="82" width="100" height="20" uuid="68b95f9f-d43d-46cc-b107-4d9cde01e817"/>
+				<reportElement x="35" y="74" width="100" height="20" uuid="68b95f9f-d43d-46cc-b107-4d9cde01e817"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA["Código: " +$F{venCodigo}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Código: " +$F{venda}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="102" width="170" height="30" uuid="a65f9037-24a7-4aee-8080-4d307e19cf25"/>
+				<reportElement x="0" y="95" width="170" height="30" uuid="a65f9037-24a7-4aee-8080-4d307e19cf25"/>
 				<textElement textAlignment="Center">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[OBRIGADO PELA PREFERÊNCIA, VOLTE SEMPRE]]></text>
 			</staticText>
-			<staticText>
-				<reportElement x="-17" y="26" width="204" height="15" uuid="85ab9876-0982-42ed-b65e-beb79a45574f"/>
-				<textElement verticalAlignment="Top"/>
-				<text><![CDATA[_____________________________________________]]></text>
-			</staticText>
 			<textField>
-				<reportElement x="-13" y="40" width="194" height="16" uuid="3d19734e-be55-472f-9058-85b84d5f8ea3"/>
+				<reportElement x="-13" y="37" width="194" height="16" uuid="3d19734e-be55-472f-9058-85b84d5f8ea3"/>
 				<textElement textAlignment="Right">
 					<font size="11" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["TOTAL PAGO R$ "+$F{venValor}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["TOTAL PAGO R$ "+$F{venValorFin}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="-20" y="45" width="210" height="19" uuid="751a4048-5b09-4cd5-8205-5070fbdd3d4a"/>
+				<reportElement x="-20" y="44" width="210" height="19" uuid="751a4048-5b09-4cd5-8205-5070fbdd3d4a"/>
 				<textElement textAlignment="Center"/>
 				<text><![CDATA[__________________________________________________________________]]></text>
 			</staticText>
+			<staticText>
+				<reportElement x="-20" y="5" width="210" height="14" uuid="e285d4c2-d034-4879-a3cc-96a9bcfe811c"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[_______________________________________________]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="-16" y="16" width="201" height="16" uuid="41d42980-1aef-4b1e-ad53-cf37c9c7f3c1"/>
+				<textElement textAlignment="Right" verticalAlignment="Bottom">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Frete : R$ "+($F{venFrete})]]></textFieldExpression>
+			</textField>
 		</band>
 	</summary>
 </jasperReport>

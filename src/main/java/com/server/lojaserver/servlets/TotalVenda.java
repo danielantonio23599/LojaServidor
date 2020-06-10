@@ -42,7 +42,7 @@ public class TotalVenda extends HttpServlet {
         int cod = l.autenticaEmpresa(n, s);
         if (cod > 0) {
             response.setHeader("auth", "1");
-            float reto = f.getValorVenda(request.getParameter("venda"), cod);
+            float reto = f.getValorFinVenda(Integer.parseInt(request.getParameter("venda")), cod);
             response.setHeader("sucesso", reto + "");
 
         } else {

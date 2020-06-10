@@ -99,7 +99,7 @@ public class CaixaDAO {
                 + "             				+ (select COALESCE(sum(sanValor),0) as sangria from caixa join sangria where caiCodigo = san_caiCodigo and caiCodigo = cai )\n"
                 + "            		  )- (select sum(devValor) from caixa join devolucao where caiCodigo = dev_caiCodigo  and caiCodigo = cai)\n"
                 + "            		 ),2) as Saldo\n"
-                + "            			from caixa join venda where caiCodigo = ven_caiCodigo and venStatus = 'fechada' and caiCodigo = " + caixa + " and cai_empCodigo = " + emp + ";";
+                + "            			from caixa join venda where caiCodigo = ven_caiCodigo and venStatus = 'Fechada' and caiCodigo = " + caixa + " and cai_empCodigo = " + emp + ";";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
@@ -119,7 +119,7 @@ public class CaixaDAO {
 
         float saldo = 0;
         String sql = "select	 round(COALESCE(sum(venValor)),2) as Vendas\n"
-                + "from caixa join venda where caiCodigo = ven_caiCodigo and venStatus = 'fechada' and caiCodigo = " + caixa + " and cai_empCodigo = " + emp + ";";
+                + "from caixa join venda where caiCodigo = ven_caiCodigo and venStatus = 'Fechada' and caiCodigo = " + caixa + " and cai_empCodigo = " + emp + ";";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
