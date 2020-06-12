@@ -26,7 +26,7 @@ import net.sf.jasperreports.engine.JasperPrint;
  *
  * @author Daniel
  */
-@WebServlet(name = "GeraRelatorioVendas", urlPatterns = {"/restaurante_server/GeraRelatorioVendas"}, initParams = {
+@WebServlet(name = "GeraRelatorioVendas", urlPatterns = {"/loja_server/GeraRelatorioVendas"}, initParams = {
     @WebInitParam(name = "nomeUsuario", value = ""),
     @WebInitParam(name = "senha", value = "")})
 public class GeraRelatorioVendas extends HttpServlet {
@@ -47,7 +47,7 @@ public class GeraRelatorioVendas extends HttpServlet {
         if (cod > 0) {
             ServletContext contexto = request.getServletContext();
             response.setHeader("auth", "1");
-            File filePath = r.geraRelatorioTodosProdutosDownload(contexto, cod);
+            File filePath = r.geraRelatorioVendas(contexto, cod);
             if (filePath != null) {
                 response.setHeader("nome", filePath.getName());
                 File downloadFile = filePath;

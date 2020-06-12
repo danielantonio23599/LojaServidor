@@ -21,7 +21,7 @@ import javax.swing.DefaultComboBoxModel;
  *
  * @author Daniel
  */
-@WebServlet(name = "PesquisaProduto", urlPatterns = {"/restaurante_server/PesquisaProduto"}, initParams = {
+@WebServlet(name = "PesquisaProduto", urlPatterns = {"/loja_server/PesquisaProduto"}, initParams = {
     @WebInitParam(name = "nomeUsuario", value = ""),
     @WebInitParam(name = "senha", value = ""),
     @WebInitParam(name = "produto", value = "")})

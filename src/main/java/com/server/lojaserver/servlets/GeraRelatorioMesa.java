@@ -27,7 +27,7 @@ import net.sf.jasperreports.engine.JasperPrint;
  *
  * @author Daniel
  */
-@WebServlet(name = "GeraRelatorioMesa", urlPatterns = {"/restaurante_server/GeraRelatorioMesa"}, initParams = {
+@WebServlet(name = "GeraRelatorioMesa", urlPatterns = {"/loja_server/GeraRelatorioMesa"}, initParams = {
     @WebInitParam(name = "nomeUsuario", value = ""),
     @WebInitParam(name = "senha", value = ""),
     @WebInitParam(name = "venda", value = "")})

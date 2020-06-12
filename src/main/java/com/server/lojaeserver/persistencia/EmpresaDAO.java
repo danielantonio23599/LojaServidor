@@ -236,7 +236,6 @@ public class EmpresaDAO {
 
             while (rs.next()) {
                 cod = rs.getInt(1);
-
             }
             this.stmt.close();
             return cod;

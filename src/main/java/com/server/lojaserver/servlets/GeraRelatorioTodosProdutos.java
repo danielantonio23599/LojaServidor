@@ -26,7 +26,7 @@ import net.sf.jasperreports.engine.JasperPrint;
  *
  * @author Daniel
  */
-@WebServlet(name = "GeraRelatorioTodosProdutos", urlPatterns = {"/restaurante_server/GeraRelatorioTodosProdutos"}, initParams = {
+@WebServlet(name = "GeraRelatorioTodosProdutos", urlPatterns = {"/loja_server/GeraRelatorioTodosProdutos"}, initParams = {
     @WebInitParam(name = "nomeUsuario", value = ""),
     @WebInitParam(name = "senha", value = "")})
 public class GeraRelatorioTodosProdutos extends HttpServlet {

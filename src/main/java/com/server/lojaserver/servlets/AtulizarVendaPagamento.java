@@ -5,14 +5,15 @@
  */
 package com.server.lojaserver.servlets;
 
-import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.server.lojaserver.beans.FuncionarioBEAN;
 import com.server.lojaserver.beans.ProdutoBEAN;
-import com.server.lojaserver.beans.ProdutosGravados;
+import com.server.lojaserver.beans.VendaBEAN;
+import com.server.lojaserver.controle.ControleFuncionario;
 import com.server.lojaserver.controle.ControleLogin;
 import com.server.lojaserver.controle.ControleProduto;
 import com.server.lojaserver.controle.ControleVenda;
 import java.io.IOException;
-import java.util.ArrayList;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebInitParam;
 import javax.servlet.annotation.WebServlet;
@@ -24,13 +25,14 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Daniel
  */
-@WebServlet(name = "ListarProdutosVendidos", urlPatterns = {"/loja_server/ListarProdutosVendidos"}, initParams = {
+@WebServlet(name = "AtualizaVendaPagamento", urlPatterns = {"/loja_server/AtualizaVendaPagamento"}, initParams = {
+    @WebInitParam(name = "venda", value = ""),
     @WebInitParam(name = "nomeUsuario", value = ""),
     @WebInitParam(name = "senha", value = "")})
-public class ListarProdutosVendidos extends HttpServlet {
+public class AtulizarVendaPagamento extends HttpServlet {
 
     ControleLogin l = new ControleLogin();
-    ControleVenda con = new ControleVenda();
+    ControleVenda pro = new ControleVenda();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -40,22 +42,18 @@ public class ListarProdutosVendidos extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String n = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
-        String s = new String(request.getParameter("senha").getBytes("iso-8859-1"), "UTF-8");
-        int cod = l.autenticaEmpresa(n,s);
+       String usuario = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
+        String senha = new String(request.getParameter("senha").getBytes("iso-8859-1"), "UTF-8");
+        int cod = l.autenticaEmpresa(usuario, senha);
         if (cod > 0) {
             response.setHeader("auth", "1");
-            ArrayList<ProdutosGravados> u = con.listarProdutosVendidosCaixa(cod);
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().println(new Gson().toJson(u));
+            String str = new String(request.getParameter("venda").getBytes("iso-8859-1"), "UTF-8");
+            VendaBEAN c = new GsonBuilder().setDateFormat("dd-MM-yyyy HH:mm:ss").create().fromJson(str, VendaBEAN.class);
+            response.setHeader("sucesso", pro.atualizaVendaPagamento(c,cod));
 
         } else {
             response.setHeader("auth", "0");
-            ArrayList<ProdutosGravados> u = null;
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().println(new Gson().toJson(u));
+
         }
     }
 

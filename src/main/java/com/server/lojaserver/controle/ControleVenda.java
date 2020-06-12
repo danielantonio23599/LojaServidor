@@ -56,6 +56,15 @@ public class ControleVenda {
         ven.atualizaVenda(venda);
         return "sucesso";
     }
+     public String atualizaVendaPagamento(VendaBEAN v, int emp) {
+        VendaDAO ven = new VendaDAO();
+        VendaBEAN venda = listarVenda(v.getCodigo(), emp);
+        venda.setPagamento(v.getPagamento());      
+        venda.setValorFin(v.getValorFin());
+        venda.setStatus(v.getStatus());
+        ven.atualizaVenda(venda);
+        return "sucesso";
+    }
 
     public File atualizaVendaNota(VendaBEAN v, int emp, ServletContext contexto) {
         ControleRelatorio r = new ControleRelatorio();

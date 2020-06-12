@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Daniel
  */
-@WebServlet(name = "FazBackup", urlPatterns = {"/restaurante_server/FazBackup"}, initParams = {
+@WebServlet(name = "FazBackup", urlPatterns = {"/loja_server/FazBackup"}, initParams = {
     @WebInitParam(name = "nomeUsuario", value = ""),
     @WebInitParam(name = "senha", value = "")})
 public class backup extends HttpServlet {

@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Daniel
  */
-@WebServlet(name = "ExcluirCargo", urlPatterns = {"/restaurante_server/ExcluirCargo"}, initParams = {
+@WebServlet(name = "ExcluirCargo", urlPatterns = {"/loja_server/ExcluirCargo"}, initParams = {
     @WebInitParam(name = "cargo", value = ""),
     @WebInitParam(name = "nomeUsuario", value = ""),
     @WebInitParam(name = "senha", value = "")})

@@ -60,6 +60,7 @@ public class ControleCaixa {
 
     public String getSaldoAtual(int empresa) {
         int caixa = getCaixa(empresa);
+        System.out.println(caixa);
         if (caixa > 0) {
             float saldo = c.getSaldoAtual(caixa, empresa);
             return saldo + "";
