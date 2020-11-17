@@ -40,17 +40,16 @@ public class PesquisaProduto extends HttpServlet {
             throws ServletException, IOException {
         String n = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
         String s = new String(request.getParameter("senha").getBytes("iso-8859-1"), "UTF-8");
-        int cod = l.autenticaEmpresa(n, s);
-        if (cod > 0) {
+        DefaultComboBoxModel u = pro.buscar(request.getParameter("produto"), n, s);
+        if (u.getSize() > 0) {
             response.setHeader("auth", "1");
-            DefaultComboBoxModel u = pro.buscar(request.getParameter("produto"), cod);
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().println(new Gson().toJson(u));
 
         } else {
             response.setHeader("auth", "0");
-            DefaultComboBoxModel u = null;
+            u = null;
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().println(new Gson().toJson(u));

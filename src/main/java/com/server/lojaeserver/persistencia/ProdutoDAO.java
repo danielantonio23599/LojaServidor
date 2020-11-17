@@ -5,6 +5,7 @@
  */
 package com.server.lojaeserver.persistencia;
 
+import com.server.lojaserver.beans.Email;
 import com.server.lojaserver.beans.ProdutoBEAN;
 import com.server.lojaserver.beans.Produtos;
 import java.sql.Connection;
@@ -26,10 +27,10 @@ public class ProdutoDAO {
         this.connection = ConnectionFactory.getConnection();
     }
 
-    public ArrayList<Produtos> buscar(String produto, int emp) {
+    public ArrayList<Produtos> buscar(String produto, String email, String senha) {
 
         ArrayList<Produtos> p = new ArrayList<>();
-        String sql = "SELECT proCodigo,proNome, proPreco,proQuantidade,proDescricao FROM produto WHERE pro_empCodigo = " + emp + " and (proCodigo LIKE '" + produto + "%' or proNome LIKE '" + produto + "%');";
+        String sql = "SELECT proCodigo,proNome, proPreco,proQuantidade,proDescricao FROM empresa join produto WHERE empEmail = '" + email + "' and empSenha = '" + senha + "' and pro_empCodigo = empCodigo and (proCodigo LIKE '" + produto + "%' or proNome LIKE '" + produto + "%');";
         System.out.println(sql);
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -53,10 +54,10 @@ public class ProdutoDAO {
 
     }
 
-    public boolean adicionar(ProdutoBEAN c, int emp) {
+    public boolean adicionar(ProdutoBEAN c, String email, String senha) {
         String sql = "INSERT INTO produto (proNome, proPreco, proCusto,proQuantidade, proDescricao,"
                 + "proTipo,proFoto,proGarantia,pro_empCodigo)"
-                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?,?);";
+                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?,(select empCodigo from empresa where empEmail = '" + email + "' and empSenha = '" + senha + "'));";
 
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -68,7 +69,6 @@ public class ProdutoDAO {
             stmt.setString(6, c.getTipo());
             stmt.setBytes(7, c.getFoto());
             stmt.setInt(8, c.getGarantia());
-            stmt.setInt(9, emp);
             stmt.execute();
             stmt.close();
             return true;
@@ -78,10 +78,10 @@ public class ProdutoDAO {
         }
     }
 
-    public ArrayList<ProdutoBEAN> listarALl(int emp) {
+    public ArrayList<ProdutoBEAN> listarALl(String email, String senha) {
         ArrayList<ProdutoBEAN> c = new ArrayList<ProdutoBEAN>();
 
-        String sql = "select * from produto where pro_empCodigo  = " + emp + ";";
+        String sql = "select * from produto join empresa where pro_empCodigo  = empCodigo and empEmail = '" + email + "' and empSenha = '" + senha + "';";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
@@ -107,10 +107,10 @@ public class ProdutoDAO {
         return c;
     }
 
-    public ArrayList<ProdutoBEAN> listarProdutosVenda(int emp, int venda) {
+    public ArrayList<ProdutoBEAN> listarProdutosVenda(String email, String senha, int venda) {
         ArrayList<ProdutoBEAN> c = new ArrayList<ProdutoBEAN>();
 
-        String sql = "select * from produto where pro_empCodigo  = " + emp + ";";
+        String sql = "select * from produto join empresa join pedido where pro_empCodigo  = empCodigo and proCodigo join ped_proCodigo and empEmail = '" + email + "' and empSenha = '" + senha + "' and ped_venCodigo = " + venda + ";";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
@@ -163,10 +163,10 @@ public class ProdutoDAO {
         return ca;
     }
 
-    public ProdutoBEAN localizar(String produto, int emp) {
+    public ProdutoBEAN localizar(String produto, String email, String senha) {
         ProdutoBEAN ca = new ProdutoBEAN();
         ca.setCodigo(0);
-        String sql = "select * from produto where proNome = '" + produto + "' and pro_empCodigo = " + emp + ";";
+        String sql = "select * from produto join empresa where proNome = '" + produto + "' and pro_empCodigo = empCodigo and empEmail = '" + email + "' and empSenha = '" + senha + "';";
         System.out.println(sql);
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -218,7 +218,7 @@ public class ProdutoDAO {
     }
 
     public void alteraQuantidade(int pro, float qtd) {
-        String sql = "update produto set proQuantidade = " + qtd + " where proCodigo = " + pro + ";";
+        String sql = "update produto set proQuantidade = (select proQuantidade from  produto where proCodigo = " + pro + ") + " + qtd + " where proCodigo = " + pro + ";";
         System.out.println(sql);
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -234,10 +234,10 @@ public class ProdutoDAO {
 
     }
 
-    public ArrayList<Produtos> listarProdutos(int emp) {
+    public ArrayList<Produtos> listarProdutos(String email, String senha) {
         ArrayList<Produtos> c = new ArrayList<Produtos>();
 
-        String sql = "select * from produto where pro_empCodigo = " + emp + ";";
+        String sql = "select * from produto join empresa where pro_empCodigo = empCodigo and empEmail = '" + email + "' and empSenha = '" + senha + "';";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
@@ -270,8 +270,10 @@ public class ProdutoDAO {
         }
     }
 
-    public float quantidadeEstoque(int produto) {
-        String sql = "select proQuantidade from produto where proTipo != 'Serviço' and proCodigo = " + produto + ";";
+    public float quantidadeEstoque(int produto, String em, String s) {
+        String sql = "select proQuantidade from caixa join empresa join produto where empCodigo = cai_empCodigo and empCodigo = "
+                + "pro_empCodigo and proTipo != 'Serviço' and proCodigo = " + produto + " and caiStatus = 'aberto' and empCodigo ="
+                + " (select empCodigo form empresa where empEmail = '" + em + "' and empSenha = '" + s + "');";
         System.out.println(sql);
         float quantidade = -1;
         try {

@@ -55,10 +55,11 @@ public class AdmicaoDAO {
         }
     }
 
-    public boolean confirmarAdmicao(AdmicaoBEAN c) {
+    public boolean confirmarAdmicao(AdmicaoBEAN c, String email, String senha) {
+        boolean ret = false;
         String sql = "update admicao set admDataAdmicao = ?, admUniforme = ?, admNumCartao = ?,"
                 + " admSalario = ?, adm_carCodigo = ? where adm_funCodigo = " + c.getFuncionario() + ""
-                + " and adm_empCodigo = " + c.getEmpresa() + ";";
+                + " and adm_empCodigo = (select empCodigo from empresa where empEmail = '" + email + "' and empSenha = '" + senha + "');";
 
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -67,33 +68,35 @@ public class AdmicaoDAO {
             stmt.setInt(3, c.getCartaoPonto());
             stmt.setFloat(4, c.getSalario());
             stmt.setInt(5, c.getCargo());
-            stmt.execute();
+            ret = stmt.execute();
             stmt.close();
-            return true;
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        return ret;
     }
 
-    public boolean demitir(AdmicaoBEAN c) {
+    public boolean demitir(AdmicaoBEAN c, String email, String senha) {
+        boolean ret;
         String sql = "update admicao set admDataSaida = ?"
                 + " where adm_funCodigo = " + c.getFuncionario() + ""
-                + " and adm_empCodigo = " + c.getEmpresa() + " and adm_carCodigo = " + c.getCargo() + ";";
+                + " and adm_empCodigo = (select empCodigo from empresa where empEmail = '" + email + "' and empSenha = '" + senha + "') and adm_carCodigo = " + c.getCargo() + ";";
 
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setString(1, c.getSaida());
-            stmt.execute();
+            ret = stmt.execute();
             stmt.close();
-            return true;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        return ret;
     }
 
-    public AdmicaoBEAN localizar(int funcionario, int empresa) {
+    public AdmicaoBEAN localizar(int funcionario, String email, String senha) {
         AdmicaoBEAN ca = new AdmicaoBEAN();
-        String sql = "select COALESCE(admDataAdmicao,''), COALESCE(admDataSaida,''), admUniforme, admNumCartao, admSalario,adm_empCodigo,adm_funCodigo,adm_carCodigo from admicao where adm_funCodigo = " + funcionario + " and adm_empCodigo = " + empresa + " ;";
+        String sql = "select COALESCE(admDataAdmicao,''), COALESCE(admDataSaida,''), admUniforme, admNumCartao, admSalario,adm_empCodigo,adm_funCodigo,adm_carCodigo from admicao where adm_funCodigo = " + funcionario + " and adm_empCodigo = (select empCodigo from empresa where empEmail = '" + email + "' and empSenha = '" + senha + "') ;";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
@@ -115,17 +118,16 @@ public class AdmicaoDAO {
         return ca;
     }
 
-    public void excluir(AdmicaoBEAN ad) {
-        System.out.println(ad.getFuncionario());
-        String sql = "delete from Admicao where adm_funCodigo = " + ad.getFuncionario() + " and adm_empCodigo = " + ad.getEmpresa() + "; ";
+    public boolean excluir(AdmicaoBEAN ad, String email, String senha) {
+        boolean ret;
+        String sql = "delete from Admicao where adm_funCodigo = " + ad.getFuncionario() + " and adm_empCodigo = (select empCodigo from empresa where empEmail = '" + email + "' and empSenha = '" + senha + "'); ";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
-            //  stmt.setInt(1, ad.getFuncionario());
-            //  stmt.setInt(2, ad.getEmpresa());
-            stmt.execute();
+            ret = stmt.execute();
             stmt.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        return ret;
     }
 }

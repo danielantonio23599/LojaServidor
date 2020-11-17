@@ -8,6 +8,7 @@ package com.server.lojaserver.servlets;
 import com.google.gson.Gson;
 import com.server.lojaserver.beans.DevolucaoBEAN;
 import com.server.lojaserver.beans.Pedido;
+import com.server.lojaserver.beans.PedidoBEAN;
 import com.server.lojaserver.controle.ControleDevolucao;
 import com.server.lojaserver.controle.ControleLogin;
 import com.server.lojaserver.controle.ControlePedido;
@@ -46,10 +47,10 @@ public class ListarPedidosPendentes extends HttpServlet {
         int cod = l.autenticaEmpresa(n, s);
         if (cod > 0) {
             response.setHeader("auth", "1");
-            ArrayList<Pedido> u = con.listarPedidos(cod);
+          //  ArrayList<PedidoBEAN> u = con.listarPedidos(cod);
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
-            response.getWriter().println(new Gson().toJson(u));
+            //response.getWriter().println(new Gson().toJson(u));
 
         } else {
             response.setHeader("auth", "0");

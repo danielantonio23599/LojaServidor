@@ -7,6 +7,7 @@ package com.server.lojaserver.servlets;
 
 import com.google.gson.Gson;
 import com.server.lojaserver.beans.Mesa;
+import com.server.lojaserver.beans.Venda;
 
 import com.server.lojaserver.controle.ControleLogin;
 import com.server.lojaserver.controle.ControleVenda;
@@ -23,10 +24,10 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Daniel
  */
-@WebServlet(name = "ListarMesaAberta", urlPatterns = {"/loja_server/ListarMesaAberta"}, initParams = {
+@WebServlet(name = "ListarVendasAbertas", urlPatterns = {"/loja_server/ListarVendasAbertas"}, initParams = {
     @WebInitParam(name = "nomeUsuario", value = ""),
     @WebInitParam(name = "senha", value = "")})
-public class ListarMesasApp extends HttpServlet {
+public class ListarVendasAbertasApp extends HttpServlet {
 
     ControleLogin l = new ControleLogin();
     ControleVenda con = new ControleVenda();
@@ -42,24 +43,23 @@ public class ListarMesasApp extends HttpServlet {
          String n = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
         String s = new String(request.getParameter("senha").getBytes("iso-8859-1"), "UTF-8");
         int codE = l.autenticaEmpresa(n,s);
-        int cod = l.autenticaUsuario(n,s);
-        if (cod > 0 || codE > 0) {
+        if (codE > 0) {
             response.setHeader("auth", "1");
-            //ArrayList<Mesa> u = con.getMesaAberta(codE);
-           // if (u != null) {
+            ArrayList<Venda> u = con.getVendasAbertas(codE);
+            if (u != null) {
                 //sucesso
                 response.setHeader("sucesso", "1");
-           // } else {
+            } else {
                 //caixa não aberto
                 response.setHeader("sucesso", "0");
-           // }
+            }
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
-            //response.getWriter().println(new Gson().toJson(u));
+            response.getWriter().println(new Gson().toJson(u));
 
         } else {
             response.setHeader("auth", "0");
-            ArrayList<Mesa> u = null;
+            ArrayList<Venda> u = null;
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().println(new Gson().toJson(u));

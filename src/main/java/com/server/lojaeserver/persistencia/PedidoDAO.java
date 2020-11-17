@@ -52,14 +52,14 @@ public class PedidoDAO {
         }
     }
 
-    public ArrayList<PedidoBEAN> listarPedidos(int empresa, int caixa) {
+    public ArrayList<PedidoBEAN> listarPedidos(String u, String s) {
         ArrayList<PedidoBEAN> c = new ArrayList<PedidoBEAN>();
 
         String sql = "SELECT pedCodigo,pedQTD,pedObs,pedStatus\n"
                 + "                FROM empresa join caixa join venda join pedido join produto\n"
                 + "                where\n"
                 + "                empCodigo = cai_empCodigo and caiCodigo = ven_caiCodigo and venCodigo = ped_venCodigo and ped_proCodigo = proCodigo\n"
-                + "                and caiCodigo=" + caixa + " and empCodigo = " + empresa + " and venStatus = 'aberta' and ped_devCodigo is null;";
+                + "                and caiStatus = 'aberta' and empCodigo = (select empCodigo from empresa where empEmail = '" + u + "' and empSenha = '" + s + "') and venStatus = 'aberta' and ped_devCodigo is null;";
         try {
             PreparedStatement stmt = (PreparedStatement) connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();

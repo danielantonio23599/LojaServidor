@@ -48,17 +48,10 @@ public class DevolverPedido extends HttpServlet {
         String usuario = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
         String senha = new String(request.getParameter("senha").getBytes("iso-8859-1"), "UTF-8");
         int pedido = Integer.parseInt(new String(request.getParameter("pedido").getBytes("iso-8859-1"), "UTF-8"));
-        int cod = l.autenticaEmpresa(usuario, senha);
-        if (cod > 0) {
-            response.setHeader("auth", "1");
-            String str = new String(request.getParameter("devolucao").getBytes("iso-8859-1"), "UTF-8");
-            DevolucaoBEAN c = new GsonBuilder().setDateFormat("dd-MM-yyyy HH:mm:ss").create().fromJson(str, DevolucaoBEAN.class);
-            response.setHeader("sucesso", ven.inserirDevolucao(c, pedido, cod));
-
-        } else {
-            response.setHeader("auth", "0");
-
-        }
+        response.setHeader("auth", "1");
+        String str = new String(request.getParameter("devolucao").getBytes("iso-8859-1"), "UTF-8");
+        DevolucaoBEAN c = new GsonBuilder().setDateFormat("dd-MM-yyyy HH:mm:ss").create().fromJson(str, DevolucaoBEAN.class);
+        response.setHeader("sucesso", ven.inserirDevolucao(c, pedido, usuario, senha));
     }
 
     /**

@@ -77,8 +77,8 @@ public class ControleRelatorio {
         return print;
     }
 
-    public File geraRelatorioVendas(ServletContext contexto, int cod) {
-        int caixa = c.getCaixa(cod);
+    public File geraRelatorioVendas(ServletContext contexto, String u, String s) {
+        int caixa = c.getCaixa(u, s);
         String jrxml = contexto.getRealPath("/relatorios/relatorio_caixa.jrxml");
         //exibe no terminal o local onde o arquivo se encontra
         // prepara parâmetros

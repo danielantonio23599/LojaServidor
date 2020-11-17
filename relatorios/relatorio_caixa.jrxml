@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.12.2.final using JasperReports Library version 6.12.2-75c5e90a222ab406e416cbf590a5397028a52de3  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="relatorio_caixa" pageWidth="210" pageHeight="298" columnWidth="170" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="f55c6f0f-1ef2-4116-bea0-d361a6d03b24">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="relatorio_caixa" pageWidth="210" pageHeight="298" columnWidth="170" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="f55c6f0f-1ef2-4116-bea0-d361a6d03b24">
 	<property name="com.jaspersoft.studio.unit." value="mm"/>
 	<property name="com.jaspersoft.studio.unit.pageHeight" value="mm"/>
 	<property name="com.jaspersoft.studio.unit.pageWidth" value="mm"/>
@@ -10,7 +10,7 @@
 	<property name="com.jaspersoft.studio.unit.rightMargin" value="mm"/>
 	<property name="com.jaspersoft.studio.unit.columnWidth" value="mm"/>
 	<property name="com.jaspersoft.studio.unit.columnSpacing" value="mm"/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Restaurante"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Loja_banco"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
 		<box>
@@ -41,15 +41,14 @@
 	</style>
 	<subDataset name="Dataset1" uuid="68520a2a-91c4-40f7-b714-6a90e4012bb5">
 		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Restaurante"/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Loja_banco"/>
 		<parameter name="caixa" class="java.lang.Integer"/>
 		<queryString language="SQL">
 			<![CDATA[SELECT proCodigo, proNome,sum(pedQTD) as quantidade,
 proPreco
 FROM empresa join caixa join venda join pedido join produto
 where empCodigo = cai_empCodigo and caiCodigo = ven_caiCodigo and venCodigo = ped_venCodigo
- and proCodigo = ped_proCodigo and caiCodigo = $P{caixa} and pedStatus = 'Realizado' and venStatus = 'aberta'
- and ped_excCodigo is null group by proCodigo]]>
+ and proCodigo = ped_proCodigo and venStatus ='Fechada' and caiCodigo = $P{caixa}  group by proCodigo]]>
 		</queryString>
 		<field name="proCodigo" class="java.lang.Integer">
 			<property name="com.jaspersoft.studio.field.label" value="proCodigo"/>
@@ -69,15 +68,15 @@ where empCodigo = cai_empCodigo and caiCodigo = ven_caiCodigo and venCodigo = pe
 	</subDataset>
 	<subDataset name="Dataset_2" uuid="58d80e02-7305-403b-9f27-d6020511190d">
 		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Restaurante"/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Loja_banco"/>
 		<parameter name="caixa" class="java.lang.Integer"/>
 		<queryString language="SQL">
 			<![CDATA[SELECT proCodigo as codigo , proNome as nome ,sum(pedQTD) as soma
 ,proPreco
 FROM empresa join caixa join venda join pedido join produto
 where empCodigo = cai_empCodigo and caiCodigo = ven_caiCodigo and venCodigo = ped_venCodigo
- and proCodigo = ped_proCodigo and caiCodigo = $P{caixa} and pedStatus = 'Realizado' and venStatus = 'aberta'
- and ped_excCodigo > 0 group by proCodigo]]>
+ and proCodigo = ped_proCodigo and caiCodigo = $P{caixa} 
+ and ped_devCodigo > 0 group by proCodigo]]>
 		</queryString>
 		<field name="codigo" class="java.lang.Integer">
 			<property name="com.jaspersoft.studio.field.label" value="codigo"/>
@@ -97,18 +96,23 @@ where empCodigo = cai_empCodigo and caiCodigo = ven_caiCodigo and venCodigo = pe
 	</subDataset>
 	<parameter name="caixa" class="java.lang.Integer"/>
 	<queryString>
-		<![CDATA[
- SELECT empNomeFantazia,
+		<![CDATA[SELECT empNomeFantazia,
+caiCodigo as codigo,
 DATE_FORMAT (caiData,'%d/%m/%Y') as caiData,
-round(sum(pedQtd * proPreco),2) as soma
+round(sum(pedQtd * proPreco),2) as soma,
+(select coalesce( round(sum(devValor),2 ),0)from caixa join devolucao  where caiCodigo = dev_caiCodigo and caiCodigo = codigo) as devolucao
  FROM empresa join caixa join venda join pedido join produto where 
 empCodigo = cai_empCodigo and caiCodigo = ven_caiCodigo and venCodigo = ped_venCodigo
  and proCodigo = ped_proCodigo
- and caiCodigo = $P{caixa} and ped_excCodigo is null group by caiCodigo;]]>
+ and caiCodigo = $P{caixa} and ped_devCodigo is null group by caiCodigo;]]>
 	</queryString>
 	<field name="empNomeFantazia" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.label" value="empNomeFantazia"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="empresa"/>
+	</field>
+	<field name="codigo" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="codigo"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="caixa"/>
 	</field>
 	<field name="caiData" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.label" value="caiData"/>
@@ -116,6 +120,9 @@ empCodigo = cai_empCodigo and caiCodigo = ven_caiCodigo and venCodigo = ped_venC
 	</field>
 	<field name="soma" class="java.lang.Double">
 		<property name="com.jaspersoft.studio.field.label" value="soma"/>
+	</field>
+	<field name="devolucao" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.label" value="devolucao"/>
 	</field>
 	<background>
 		<band splitType="Stretch"/>
@@ -255,7 +262,7 @@ empCodigo = cai_empCodigo and caiCodigo = ven_caiCodigo and venCodigo = ped_venC
 		</band>
 	</pageHeader>
 	<summary>
-		<band height="106">
+		<band height="140">
 			<componentElement>
 				<reportElement x="-15" y="37" width="200" height="43" isRemoveLineWhenBlank="true" uuid="ccb3bbcd-18cc-4fc4-a23b-50b50118a0ab">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
@@ -359,7 +366,7 @@ empCodigo = cai_empCodigo and caiCodigo = ven_caiCodigo and venCodigo = ped_venC
 			<staticText>
 				<reportElement x="0" y="17" width="100" height="20" uuid="c5bfe3b8-d529-40ef-a225-3e5aa39e2903"/>
 				<textElement verticalAlignment="Middle"/>
-				<text><![CDATA[Cancelados]]></text>
+				<text><![CDATA[Devolvidos]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="-20" y="-4" width="200" height="20" uuid="5fff49c4-674e-474b-a42a-ffbfa66e9be2"/>
@@ -369,11 +376,18 @@ empCodigo = cai_empCodigo and caiCodigo = ven_caiCodigo and venCodigo = ped_venC
 				<textFieldExpression><![CDATA["Total Vendido : R$"+$F{soma}]]></textFieldExpression>
 			</textField>
 			<textField pattern="HH:mm">
-				<reportElement x="24" y="80" width="155" height="20" uuid="4e545b0c-54ea-43f1-80e0-1c7ef0e5b668"/>
+				<reportElement x="24" y="113" width="155" height="20" uuid="4e545b0c-54ea-43f1-80e0-1c7ef0e5b668"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA["HORA: "+new SimpleDateFormat("HH:mm:ss").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="-15" y="86" width="200" height="20" uuid="8fc1e74e-237f-4003-9d7b-280f7ab3eaae"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Total Devolvido : R$"+$F{devolucao}]]></textFieldExpression>
 			</textField>
 		</band>
 	</summary>

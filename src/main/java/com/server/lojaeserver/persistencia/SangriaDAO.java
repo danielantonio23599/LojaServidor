@@ -24,11 +24,10 @@ public class SangriaDAO {
         this.connection = ConnectionFactory.getConnection();
     }
 
-    public ArrayList<SangriaBEAN> buscar(int caixa) {
+    public ArrayList<SangriaBEAN> buscar(String u,String s) {
 
         ArrayList<SangriaBEAN> p = new ArrayList<>();
-        String sql = "SELECT * FROM sangria WHERE san_caiCodigo = " + caixa + ";";
-
+        String sql = "SELECT * FROM sangria join caixa join empresa WHERE san_caiCodigo = caiCodigo and empCodigo = cai_empCodigo and empEmail = '"+u+"' and empSenha = '"+s+";";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
@@ -50,9 +49,9 @@ public class SangriaDAO {
 
     }
 
-    public boolean adicionar(SangriaBEAN c) {
+    public boolean adicionar(SangriaBEAN c,String u,String s) {
         String sql = "INSERT INTO sangria (sanValor, sanTime, san_caiCodigo)"
-                + " VALUES (?, ?, ?);";
+                + " VALUES (?, ?, (select empCodigo from empresa where empEmail = '" + u + "' and empSenha = '" + s + "'));";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setFloat(1, c.getValor());

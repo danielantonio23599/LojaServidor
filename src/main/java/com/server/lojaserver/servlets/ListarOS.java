@@ -5,10 +5,15 @@
  */
 package com.server.lojaserver.servlets;
 
-import com.google.gson.GsonBuilder;
-import com.server.lojaserver.beans.DespesaBEAN;
-import com.server.lojaserver.controle.ControleDespesa;
+import com.google.gson.Gson;
+import com.server.lojaserver.beans.DevolucaoBEAN;
+import com.server.lojaserver.beans.OrdemServicoBEAN;
+import com.server.lojaserver.beans.Pedido;
+import com.server.lojaserver.controle.ControleDevolucao;
 import com.server.lojaserver.controle.ControleLogin;
+import com.server.lojaserver.controle.ControleOS;
+import com.server.lojaserver.controle.ControlePedido;
+import com.server.lojaserver.controle.ControleVenda;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.servlet.ServletException;
@@ -22,14 +27,13 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Daniel
  */
-@WebServlet(name = "IncluirDespesa", urlPatterns = {"/loja_server/IncluirDespesa"}, initParams = {
-    @WebInitParam(name = "despesa", value = ""),
+@WebServlet(name = "ListarOSs", urlPatterns = {"/loja_server/ListarOSs"}, initParams = {
     @WebInitParam(name = "nomeUsuario", value = ""),
     @WebInitParam(name = "senha", value = "")})
-public class IncluirDespesas extends HttpServlet {
+public class ListarOS extends HttpServlet {
 
     ControleLogin l = new ControleLogin();
-    ControleDespesa con_des = new ControleDespesa();
+    ControleOS con = new ControleOS();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -39,13 +43,23 @@ public class IncluirDespesas extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String n = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
+         String n = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
         String s = new String(request.getParameter("senha").getBytes("iso-8859-1"), "UTF-8");
+        int cod = l.autenticaEmpresa(n,s);
+        if (cod > 0) {
+            response.setHeader("auth", "1");
+            ArrayList<OrdemServicoBEAN> u = con.listarOSs(cod);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().println(new Gson().toJson(u));
 
-        response.setHeader("auth", "1");
-        String str = new String(request.getParameter("despesa").getBytes("iso-8859-1"), "UTF-8");
-        DespesaBEAN c = new GsonBuilder().setDateFormat("dd-MM-yyyy HH:mm:ss").create().fromJson(str, DespesaBEAN.class);
-        response.setHeader("sucesso", con_des.adicionar(c, n, s));
+        } else {
+            response.setHeader("auth", "0");
+            ArrayList<OrdemServicoBEAN> u = null;
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().println(new Gson().toJson(u));
+        }
     }
 
     /**

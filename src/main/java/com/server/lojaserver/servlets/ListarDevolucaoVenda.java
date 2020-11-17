@@ -46,7 +46,7 @@ public class ListarDevolucaoVenda extends HttpServlet {
         int cod = l.autenticaEmpresa(n,s);
         if (cod > 0) {
             response.setHeader("auth", "1");
-            ArrayList<DevolucaoBEAN> u = pro.listarDevolucaoVenda(request.getParameter("venda"),cod);
+            ArrayList<DevolucaoBEAN> u = pro.listarDevolucaoVenda(request.getParameter("venda"));
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().println(new Gson().toJson(u));

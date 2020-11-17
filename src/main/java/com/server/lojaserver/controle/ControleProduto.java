@@ -20,10 +20,10 @@ public class ControleProduto {
     private ProdutoDAO p = new ProdutoDAO();
     private ControlePedido pc = new ControlePedido();
 
-    public DefaultComboBoxModel buscar(String produto, int emp) {
+    public DefaultComboBoxModel buscar(String produto, String email, String senha) {
         DefaultComboBoxModel modelo = new DefaultComboBoxModel();
 
-        ArrayList<Produtos> pp = p.buscar(produto, emp);
+        ArrayList<Produtos> pp = p.buscar(produto, email, senha);
         if (pp.size() > 0) {
             for (Produtos p : pp) {
                 modelo.addElement(p.getCodigo() + " : " + p.getNome() + " : R$ " + p.getPreco());
@@ -35,8 +35,8 @@ public class ControleProduto {
         return modelo;
     }
 
-    public ArrayList<Produtos> buscarP(String produto, int emp) {
-        ArrayList<Produtos> pp = p.buscar(produto, emp);
+    public ArrayList<Produtos> buscarP(String produto, String email, String senha) {
+        ArrayList<Produtos> pp = p.buscar(produto, email, senha);
         return pp;
     }
 
@@ -44,15 +44,14 @@ public class ControleProduto {
         return p.localizar(Integer.parseInt(produto));
     }
 
-    public ArrayList<ProdutoBEAN> listarAll(int emp) {
-        return p.listarALl(emp);
+    public ArrayList<ProdutoBEAN> listarAll(String email, String senha) {
+        return p.listarALl(email, senha);
     }
 
-    public String cadastrar(ProdutoBEAN f, int emp) {
-        ProdutoBEAN pro = p.localizar(f.getNome(), emp);
+    public String cadastrar(ProdutoBEAN f, String email, String senha) {
+        ProdutoBEAN pro = p.localizar(f.getNome(), email, senha);
         if (pro.getCodigo() == 0) {
-            p.adicionar(f, emp);
-
+            p.adicionar(f, email, senha);
             return "Cadastro Realizado com sucesso!!";
         } else {
             return "Produto com o mesmo nome já CADASTRADO!!";
@@ -70,38 +69,29 @@ public class ControleProduto {
         return "Produto Excluido com sucesso!!";
     }
 
-    public Produtos buscarUm(String combo, int emp) {
-        ArrayList<Produtos> produtos = p.listarProdutos(emp);
-        //  ArrayList<Produtos> todos = pc.listarPedidos(produtos);
+    public Produtos buscarUm(String combo, String email, String senha) {
+        ArrayList<Produtos> produtos = p.listarProdutos(email, senha);
         for (Produtos p : produtos) {
             String pro = p.getCodigo() + " : " + p.getNome() + " : R$ " + p.getPreco();
-            System.out.println(combo);
-            System.out.println(pro);
             if (combo.equals(pro)) {
-                System.out.println(combo);
                 return p;
             }
         }
         return null;
     }
 
-    public float quantidadeEstoque(int produto, int emp, float quantidade) {
-        float qtd = p.quantidadeEstoque(produto);
+    public float quantidadeEstoque(int produto, String e, String s, float quantidade) {
+        float qtd = p.quantidadeEstoque(produto, e, s);
         return qtd;
     }
 
     public void diminuiEstoque(int produto, float diminuicao, float atual) {
-
-        p.alteraQuantidade(produto, (atual - diminuicao));
+        p.alteraQuantidade(produto, (-diminuicao));
     }
 
     public void aumentaEstoque(int produto, float quantidade) {
         System.out.println(" quantidade : " + quantidade);
-        float qtd = p.quantidadeEstoque(produto);
-        System.out.println(" qtd : " + qtd);
-        qtd += quantidade;
-        System.out.println(" qtd : " + qtd);
-        p.alteraQuantidade(produto, qtd);
+        p.alteraQuantidade(produto, quantidade);
 
     }
 

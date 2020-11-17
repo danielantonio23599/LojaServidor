@@ -43,20 +43,15 @@ public class ListarSangria extends HttpServlet {
             throws ServletException, IOException {
         String n = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
         String ss = new String(request.getParameter("senha").getBytes("iso-8859-1"), "UTF-8");
-        int cod = l.autenticaEmpresa(n,ss);
-        if (cod > 0) {
+        ArrayList<SangriaBEAN> s = con.listarSangriasCaixa(n, ss);
+        if (s.size() > 0) {
             response.setHeader("auth", "1");
-            ArrayList<SangriaBEAN> s = con.listarSangriasCaixa(cod);
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().println(new Gson().toJson(s));
 
         } else {
             response.setHeader("auth", "0");
-            ArrayList<SangriaBEAN> s  = null;
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().println(new Gson().toJson(s));
         }
     }
 

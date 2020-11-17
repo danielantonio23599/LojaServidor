@@ -5,7 +5,6 @@
  */
 package com.server.lojaserver.servlets;
 
-
 import com.server.lojaserver.controle.ControleCaixa;
 import com.server.lojaserver.controle.ControleLogin;
 import java.io.IOException;
@@ -36,18 +35,10 @@ public class IsCaixaAberto extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-         String n = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
+        String n = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
         String s = new String(request.getParameter("senha").getBytes("iso-8859-1"), "UTF-8");
-        int cod = l.autenticaEmpresa(n,s);
-        if (cod > 0) {
-            response.setHeader("auth", "1");
-            response.setHeader("sucesso", f.isCaixaAberto(cod)+"");
-         
-
-        } else {
-            response.setHeader("auth", "0");
-
-        }
+        response.setHeader("auth", "1");
+        response.setHeader("sucesso", f.isCaixaAberto(n, s) + "");
     }
 
     /**

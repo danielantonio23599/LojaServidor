@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.12.2.final using JasperReports Library version 6.12.2-75c5e90a222ab406e416cbf590a5397028a52de3  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="relatorio_caixa" pageWidth="210" pageHeight="298" columnWidth="170" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="f55c6f0f-1ef2-4116-bea0-d361a6d03b24">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="relatorio_caixa" pageWidth="210" pageHeight="298" columnWidth="170" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="f55c6f0f-1ef2-4116-bea0-d361a6d03b24">
 	<property name="com.jaspersoft.studio.unit." value="mm"/>
 	<property name="com.jaspersoft.studio.unit.pageHeight" value="mm"/>
 	<property name="com.jaspersoft.studio.unit.pageWidth" value="mm"/>
@@ -50,7 +50,7 @@
 FROM empresa join caixa join venda join pedido join produto
 where empCodigo = cai_empCodigo and caiCodigo = ven_caiCodigo and venCodigo = ped_venCodigo
  and proCodigo = ped_proCodigo and  caiData = $P{data} and empCodigo =$P{empresa}
- and venStatus = 'Fechada' group by proCodigo]]>
+ and ped_devCodigo is null group by proCodigo]]>
 		</queryString>
 		<field name="caiData" class="java.lang.String">
 			<property name="com.jaspersoft.studio.field.label" value="caiData"/>

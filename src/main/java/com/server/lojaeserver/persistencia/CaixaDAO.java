@@ -5,6 +5,7 @@
  */
 package com.server.lojaeserver.persistencia;
 
+import com.server.lojaserver.beans.Caixa;
 import com.server.lojaserver.beans.CaixaBEAN;
 import java.sql.Connection;
 import java.sql.Date;
@@ -25,8 +26,8 @@ public class CaixaDAO {
         this.connection = ConnectionFactory.getConnection();
     }
 
-    public boolean abrirCaixa(CaixaBEAN c) {
-        String sql = "insert into caixa (caiData,caiIn,caiTrocoIn,caiStatus,cai_funCodigo,cai_empCodigo) values (?,?,?,?,?,?)";
+    public boolean abrirCaixa(CaixaBEAN c, String email, String senha) {
+        String sql = "insert into caixa (caiData,caiIn,caiTrocoIn,caiStatus,cai_funCodigo,cai_empCodigo) values (?,?,?,?,?,(select empCodigo from empresa where empEmail = '" + email + "' and empSenha = '" + senha + "'))";
         System.out.println("dados fun " + c.getFuncionario());
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -36,7 +37,6 @@ public class CaixaDAO {
             stmt.setFloat(3, c.getTrocoIn());
             stmt.setString(4, "aberto");
             stmt.setInt(5, c.getFuncionario());
-            stmt.setInt(6, c.getEmpresa());
             stmt.execute();
             stmt.close();
 
@@ -74,6 +74,23 @@ public class CaixaDAO {
         return ca;
     }
 
+    public int listar(String u, String s) {
+        int caixa = 0;
+        String sql = "select caiCodigo from empresa join caixa where empCodigo = cai_empCodigo and caiStatus = 'aberto' and empEmail = '" + u + "' and empSenha = '" + s + "';";
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                caixa = rs.getInt(1);
+            }
+            stmt.close();
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return caixa;
+    }
+
     public void fecharCaixa(CaixaBEAN c) {
         String sql = "update caixa set caiOut = ? , caiTrocoFin = ? , caiStatus = ? where caiStatus = 'aberto';";
         try {
@@ -93,16 +110,16 @@ public class CaixaDAO {
 
     }
 
-    public float getSaldoAtual(int caixa, int emp) {
+    public float getSaldoAtual(String email, String senha) {
         float saldo = 0;
-        String sql = "select caiCodigo as cai,round(( (COALESCE(sum(venValorFin) ,0)+ caiTrocoIn) - ( (select COALESCE(sum(disPreco),0) from caixa join despesa where caiCodigo =  dis_caiCodigo and caiCodigo = cai )\n" +
-"             				+ (select COALESCE(sum(sanValor),0) as sangria from caixa join sangria where caiCodigo = san_caiCodigo and caiCodigo = cai )\n" +
-"            		  )- (select COALESCE(sum(devValor),0) from caixa join devolucao where caiCodigo = dev_caiCodigo  and caiCodigo = cai)\n" +
-"            		 ),2) as Saldo\n" +
-"            			from caixa join venda where caiCodigo = ven_caiCodigo and venStatus = 'Fechada' and caiCodigo = " + caixa + " and cai_empCodigo = " + emp + ";";
+        String sql = "select caiCodigo as cai,round(((COALESCE(sum(venValorFin) ,0)+ caiTrocoIn) - ( (select COALESCE(sum(disPreco),0) from caixa join despesa where caiCodigo =  dis_caiCodigo and caiCodigo = cai )\n"
+                + "                           				+ (select COALESCE(sum(sanValor),0) as sangria from caixa join sangria where caiCodigo = san_caiCodigo and caiCodigo = cai )\n"
+                + "                         		  )- (select COALESCE(sum(devValor),0) from caixa join devolucao where caiCodigo = dev_caiCodigo  and caiCodigo = cai)\n"
+                + "                          		 ),2) as Saldo                        			\n"
+                + "                                 from empresa join caixa join venda where empCodigo = cai_empCodigo and caiCodigo = ven_caiCodigo and venStatus = 'Fechada' and caiStatus = 'aberta' and cai_empCodigo = (select empCodigo from empresa where  empEmail = '" + email + "' and empSenha = '" + senha + "');";
         System.out.println(sql);
         try {
-            
+
             PreparedStatement stmt = connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -117,11 +134,11 @@ public class CaixaDAO {
         return saldo;
     }
 
-    public float getTotalVendido(int caixa, int emp) {
-
+    public float getTotalVendido(String email, String senha) {
         float saldo = 0;
-        String sql = "select	 round(COALESCE(sum(venValor)),2) as Vendas\n"
-                + "from caixa join venda where caiCodigo = ven_caiCodigo and venStatus = 'Fechada' and caiCodigo = " + caixa + " and cai_empCodigo = " + emp + ";";
+        String sql = "select	 round(COALESCE(sum(venValorFin)),2) as Vendas\n"
+                + "from empresa join caixa join venda where empCodigo = cai_empCodigo and caiCodigo = ven_caiCodigo and \n"
+                + "venStatus = 'Fechada' and caiStatus = 'aberto' and empEmail = '" + email + "' and empSenha = '" + senha + "';";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
@@ -134,6 +151,45 @@ public class CaixaDAO {
             System.out.println(e.getMessage());
         }
         return saldo;
+    }
+
+    public Caixa getValoresCaixa(String emai, String senha) {
+        String sql = "select caiCodigo as cai,empCodigo as emp,\n"
+                + "(select COALESCE(sum(disPreco),0) from despesa join caixa join empresa where dis_caiCodigo = disCodigo and empCodigo = cai_empCodigo and empCodigo = emp ) as des,\n"
+                + "(SELECT COALESCE(sum(sanValor),0) FROM sangria join caixa join empresa where san_caiCodigo = sanCodigo and empCodigo = cai_empCodigo and empCodigo = emp ) as san,\n"
+                + "(select round(((COALESCE(sum(venValorFin) ,0)+ caiTrocoIn) - ( (select COALESCE(sum(disPreco),0) from caixa join despesa where caiCodigo =  dis_caiCodigo and caiCodigo = cai )\n"
+                + "                           				+ (select COALESCE(sum(sanValor),0) as sangria from caixa join sangria where caiCodigo = san_caiCodigo and caiCodigo = cai )\n"
+                + "                         		  )- (select COALESCE(sum(devValor),0) from caixa join devolucao where caiCodigo = dev_caiCodigo  and caiCodigo = cai)\n"
+                + "                          		 ),2)                        			\n"
+                + "                                 from empresa join caixa join venda where empCodigo = cai_empCodigo and caiCodigo = ven_caiCodigo and venStatus = 'Fechada' and caiStatus = 'aberta' and cai_empCodigo = (select empCodigo from empresa where  empCodigo = emp)) as saldo,\n"
+                + "(select	 round(COALESCE(sum(venValorFin)),2) as Vendas\n"
+                + "from empresa join caixa join venda where empCodigo = cai_empCodigo and caiCodigo = ven_caiCodigo and \n"
+                + "venStatus = 'Fechada' and caiStatus = 'aberto' and empCodigo = emp) as faturanmento,\n"
+                + "(select coalesce(sum(devQTD*proPreco),0)\n"
+                + "	from  caixa join devolucao join pedido join produto where\n"
+                + "	caiCodigo = dev_caiCodigo and devCodigo = ped_devCodigo and proCodigo = ped_proCodigo and caiCodigo = cai group by caiCodigo) as devolucao\n"
+                + "FROM empresa join caixa where empCodigo = cai_empCodigo and empEmail = '" + emai + "' and empSenha = '" + senha + "' ;";
+
+        Caixa c = new Caixa();
+
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                c.setCaixa(rs.getInt(1));
+                c.setDespesas(rs.getFloat(3));
+                c.setSangria(rs.getFloat(4));
+                c.setSaldo(rs.getFloat(5));
+                c.setFaturamento(rs.getFloat(6));
+                c.setDevolucao(rs.getFloat(7));
+
+            }
+            stmt.close();
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return c;
     }
 
 }

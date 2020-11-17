@@ -58,4 +58,8 @@ public class ControleLogin {
         return f.localizar(cod);
     }
 
+    public int getCaixa(String n, String s) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

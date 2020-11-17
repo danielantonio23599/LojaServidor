@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletResponse;
     @WebInitParam(name = "senha", value = "")})
 public class AbrirVenda extends HttpServlet {
 
-    ControleLogin l = new ControleLogin();
+    ControleCaixa l = new ControleCaixa();
     ControleVenda con = new ControleVenda();
 
     @Override
@@ -36,17 +36,10 @@ public class AbrirVenda extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-         String n = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
+        String n = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
         String s = new String(request.getParameter("senha").getBytes("iso-8859-1"), "UTF-8");
-        int cod = l.autenticaEmpresa(n,s);
-        if (cod > 0) {
-            response.setHeader("auth", "1");
-           response.setHeader("sucesso", con.abrirVenda(cod) + "");
-
-        } else {
-            response.setHeader("auth", "0");
-
-        }
+        response.setHeader("auth", "1");
+        response.setHeader("sucesso", con.abrirVenda(n, s) + "");
     }
 
     /**

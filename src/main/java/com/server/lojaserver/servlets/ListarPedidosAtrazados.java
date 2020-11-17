@@ -46,10 +46,10 @@ public class ListarPedidosAtrazados extends HttpServlet {
         int cod = l.autenticaEmpresa(n,s);
         if (cod > 0) {
             response.setHeader("auth", "1");
-            ArrayList<Pedido> u = con.listarPedidosAtrazados(cod);
+            //ArrayList<Pedido> u = con.listarPedidosAtrazados(cod);
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
-            response.getWriter().println(new Gson().toJson(u));
+           // response.getWriter().println(new Gson().toJson(u));
 
         } else {
             response.setHeader("auth", "0");

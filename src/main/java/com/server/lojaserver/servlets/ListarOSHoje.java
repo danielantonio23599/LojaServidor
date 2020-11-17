@@ -3,15 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.server.lojaserver.controle;
+package com.server.lojaserver.servlets;
 
-import com.server.lojaserver.servlets.*;
 import com.google.gson.Gson;
-import com.server.lojaserver.beans.Mesa;
-import com.server.lojaserver.beans.Venda;
-import com.server.lojaserver.beans.VendaBEAN;
-
+import com.server.lojaserver.beans.DevolucaoBEAN;
+import com.server.lojaserver.beans.OrdemServicoBEAN;
+import com.server.lojaserver.beans.Pedido;
+import com.server.lojaserver.controle.ControleDevolucao;
 import com.server.lojaserver.controle.ControleLogin;
+import com.server.lojaserver.controle.ControleOS;
+import com.server.lojaserver.controle.ControlePedido;
 import com.server.lojaserver.controle.ControleVenda;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,15 +27,13 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Daniel
  */
-@WebServlet(name = "AdicionarClienteVenda", urlPatterns = {"/loja_server/AdicionarClienteVenda"}, initParams = {
+@WebServlet(name = "ListarOSHoje", urlPatterns = {"/loja_server/ListarOSHoje"}, initParams = {
     @WebInitParam(name = "nomeUsuario", value = ""),
-    @WebInitParam(name = "senha", value = ""),
-    @WebInitParam(name = "venda", value = ""),
-    @WebInitParam(name = "cliente", value = "")})
-public class AdicionarClienteVenda extends HttpServlet {
+    @WebInitParam(name = "senha", value = "")})
+public class ListarOSHoje extends HttpServlet {
 
     ControleLogin l = new ControleLogin();
-    ControleVenda con = new ControleVenda();
+    ControleOS con = new ControleOS();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -44,17 +43,22 @@ public class AdicionarClienteVenda extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String n = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
+         String n = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
         String s = new String(request.getParameter("senha").getBytes("iso-8859-1"), "UTF-8");
-        int venda = Integer.parseInt(new String(request.getParameter("venda").getBytes("iso-8859-1"), "UTF-8"));
-        int clente = Integer.parseInt(new String(request.getParameter("cliente").getBytes("iso-8859-1"), "UTF-8"));
-        int codE = l.autenticaEmpresa(n, s);
-        if (codE > 0) {
+        int cod = l.autenticaEmpresa(n,s);
+        if (cod > 0) {
             response.setHeader("auth", "1");
-            response.setHeader("sucesso", con.adicionarClienteVenda(venda, clente));
+            ArrayList<OrdemServicoBEAN> u = con.listarOSHoje(cod);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().println(new Gson().toJson(u));
 
         } else {
             response.setHeader("auth", "0");
+            ArrayList<OrdemServicoBEAN> u = null;
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().println(new Gson().toJson(u));
         }
     }
 

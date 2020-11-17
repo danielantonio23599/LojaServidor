@@ -8,6 +8,7 @@ package com.server.lojaserver.servlets;
 import com.google.gson.Gson;
 import com.server.lojaserver.beans.DevolucaoBEAN;
 import com.server.lojaserver.beans.Pedido;
+import com.server.lojaserver.beans.PedidoBEAN;
 import com.server.lojaserver.controle.ControleDevolucao;
 import com.server.lojaserver.controle.ControleLogin;
 import com.server.lojaserver.controle.ControlePedido;
@@ -41,12 +42,12 @@ public class ListarPedidos extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-         String n = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
+        String n = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
         String s = new String(request.getParameter("senha").getBytes("iso-8859-1"), "UTF-8");
-        int cod = l.autenticaEmpresa(n,s);
+        int cod = l.autenticaEmpresa(n, s);
         if (cod > 0) {
             response.setHeader("auth", "1");
-            ArrayList<Pedido> u = con.listarPedidosCaixa(cod);
+            ArrayList<PedidoBEAN> u = con.listarPedidos(n, s);
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().println(new Gson().toJson(u));

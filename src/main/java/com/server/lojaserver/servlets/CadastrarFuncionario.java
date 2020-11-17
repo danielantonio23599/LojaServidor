@@ -54,7 +54,7 @@ public class CadastrarFuncionario extends HttpServlet {
             if (cod > 0) {
                 response.setHeader("sucesso", con_adm.preCadastro(cod, log));
             } else {
-                response.setHeader("sucesso", "Funcionario já CADASTRADO!!");
+                response.setHeader("sucesso", "Funcionario ja CADASTRADO!!");
             }
 
         } else {

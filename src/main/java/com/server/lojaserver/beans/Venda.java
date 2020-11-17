@@ -10,6 +10,7 @@ package com.server.lojaserver.beans;
  * @author Daniel
  */
 public class Venda {
+
     private int codigo;
     private String hora;
     private float valor;
@@ -24,6 +25,25 @@ public class Venda {
     private String cliente;
     private String data;
     private Float devolucao;
+    private byte[] cliFoto;
+    private byte[] proFoto;
+
+    public byte[] getCliFoto() {
+        return cliFoto;
+    }
+
+    public void setCliFoto(byte[] cliFoto) {
+        this.cliFoto = cliFoto;
+    }
+
+    public byte[] getProFoto() {
+        return proFoto;
+    }
+
+    public void setProFoto(byte[] proFoto) {
+        this.proFoto = proFoto;
+    }
+    
 
     public Float getDevolucao() {
         return devolucao;
@@ -32,7 +52,6 @@ public class Venda {
     public void setDevolucao(Float devolucao) {
         this.devolucao = devolucao;
     }
-    
 
     public float getValorFinal() {
         return valorFinal;
@@ -137,6 +156,5 @@ public class Venda {
     public void setData(String data) {
         this.data = data;
     }
-    
-    
+
 }

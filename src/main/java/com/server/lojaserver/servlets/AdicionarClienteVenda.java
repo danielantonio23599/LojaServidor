@@ -5,16 +5,18 @@
  */
 package com.server.lojaserver.servlets;
 
+import com.server.lojaserver.servlets.*;
 import com.google.gson.Gson;
-import com.google.zxing.WriterException;
 import com.server.lojaserver.beans.Mesa;
+import com.server.lojaserver.beans.Venda;
+import com.server.lojaserver.beans.VendaBEAN;
 
 import com.server.lojaserver.controle.ControleLogin;
+import com.server.lojaserver.controle.ControleLogin;
+import com.server.lojaserver.controle.ControleVenda;
 import com.server.lojaserver.controle.ControleVenda;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebInitParam;
 import javax.servlet.annotation.WebServlet;
@@ -26,12 +28,12 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Daniel
  */
-@WebServlet(name = "TranferirPedido", urlPatterns = {"/loja_server/TranferirPedido"}, initParams = {
-    @WebInitParam(name = "mesaDestino", value = ""),
-    @WebInitParam(name = "pedido", value = ""),
+@WebServlet(name = "AdicionarClienteVenda", urlPatterns = {"/loja_server/AdicionarClienteVenda"}, initParams = {
     @WebInitParam(name = "nomeUsuario", value = ""),
-    @WebInitParam(name = "senha", value = "")})
-public class TransferirPedido extends HttpServlet {
+    @WebInitParam(name = "senha", value = ""),
+    @WebInitParam(name = "venda", value = ""),
+    @WebInitParam(name = "cliente", value = "")})
+public class AdicionarClienteVenda extends HttpServlet {
 
     ControleLogin l = new ControleLogin();
     ControleVenda con = new ControleVenda();
@@ -46,18 +48,15 @@ public class TransferirPedido extends HttpServlet {
             throws ServletException, IOException {
         String n = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
         String s = new String(request.getParameter("senha").getBytes("iso-8859-1"), "UTF-8");
-        int cod = l.autenticaEmpresa(n, s);
-        if (cod > 0) {
+        int venda = Integer.parseInt(new String(request.getParameter("venda").getBytes("iso-8859-1"), "UTF-8"));
+        int clente = Integer.parseInt(new String(request.getParameter("cliente").getBytes("iso-8859-1"), "UTF-8"));
+        int codE = l.autenticaEmpresa(n, s);
+        if (codE > 0) {
             response.setHeader("auth", "1");
-            try {
-                response.setHeader("sucesso", con.transferirPedido(request.getParameter("mesaDestino"), request.getParameter("pedido"), cod));
-            } catch (WriterException ex) {
-                Logger.getLogger(TransferirPedido.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            response.setHeader("sucesso", con.adicionarClienteVenda(venda, clente));
 
         } else {
             response.setHeader("auth", "0");
-
         }
     }
 

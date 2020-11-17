@@ -20,9 +20,8 @@ public class ControleCaixa {
     private final CaixaDAO c = new CaixaDAO();
     //
 
-    public int isCaixaAberto(int empresa) {
-        CaixaBEAN caixa = c.listar(empresa);
-        return caixa.getCodigo();
+    public int isCaixaAberto(String u, String s) {
+        return c.listar(u, s);
     }
 
     public CaixaBEAN getCaixaAberto(int empresa) {
@@ -30,14 +29,13 @@ public class ControleCaixa {
         return caixa;
     }
 
-    public int getCaixa(int empresa) {
-        return isCaixaAberto(empresa);
+    public int getCaixa(String u, String s) {
+        return c.listar(u, s);
     }
 
-    public String abrirCaixa(CaixaBEAN ca, int empCod) {
-        ca.setEmpresa(empCod);
-        if (isCaixaAberto(empCod) == 0) {
-            c.abrirCaixa(ca);
+    public String abrirCaixa(CaixaBEAN ca, String u, String s) {
+        if (isCaixaAberto(u, s) == 0) {
+            c.abrirCaixa(ca, u, s);
             return "Abriu!!";
         } else {
             return "Caixa Já Aberto";
@@ -45,9 +43,9 @@ public class ControleCaixa {
 
     }
 
-    public String fecharCaixa(String troco, int empresa) {
+    public String fecharCaixa(String troco, String u, String s) {
         CaixaBEAN ca = new CaixaBEAN();
-        ca.setCodigo(getCaixa(empresa));
+        ca.setCodigo(getCaixa(u,s));
         ca.setOut(Time.getTime());
         ca.setTrocoFin(Float.parseFloat(troco));
         c.fecharCaixa(ca);
@@ -58,35 +56,17 @@ public class ControleCaixa {
         return c.listar(empresa);
     }
 
-    public String getSaldoAtual(int empresa) {
-        int caixa = getCaixa(empresa);
-        System.out.println(caixa);
-        if (caixa > 0) {
-            float saldo = c.getSaldoAtual(caixa, empresa);
+    public String getSaldoAtual(String u, String s) {
+            float saldo = c.getSaldoAtual(u,s);
             return saldo + "";
-        } else {
-            return "-1";
-        }
-
     }
 
-    public String getTotalVendido(int empresa) {
-        float saldo = c.getTotalVendido(getCaixa(empresa), empresa);
+    public String getTotalVendido(String u, String s) {
+        float saldo = c.getTotalVendido(u,s);
         return saldo + "";
     }
 
-    public Caixa listarValoresCaixa(int empresa) {
-        ControleDespesa d = new ControleDespesa();
-        ControleSangria s = new ControleSangria();
-        ControleDevolucao e = new ControleDevolucao();
-        int caixa = getCaixa(empresa);
-        Caixa c = new Caixa();
-        c.setCaixa(caixa);
-        c.setDespesas(d.getTotalDespesasCaixa(empresa));
-        c.setSangria(s.getTotalSangriasCaixa(empresa));
-        c.setSaldo(Float.parseFloat(getSaldoAtual(empresa)));
-        c.setFaturamento(Float.parseFloat(getTotalVendido(empresa)));
-        c.setDevolucao(e.getTotalDevolucaoCaixa(caixa));
-        return c;
+    public Caixa listarValoresCaixa(String u, String senha) {
+        return c.getValoresCaixa(senha, senha);
     }
 }

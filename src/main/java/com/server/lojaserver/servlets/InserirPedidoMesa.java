@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletResponse;
     @WebInitParam(name = "senha", value = "")})
 public class InserirPedidoMesa extends HttpServlet {
 
-    ControleLogin l = new ControleLogin();
+    ControleCaixa l = new ControleCaixa();
     ControleVenda con = new ControleVenda();
 
     @Override
@@ -45,20 +45,15 @@ public class InserirPedidoMesa extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-         String n = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
+        String n = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
         String s = new String(request.getParameter("senha").getBytes("iso-8859-1"), "UTF-8");
-        int cod = l.autenticaEmpresa(n,s);
-        if (cod > 0) {
-            response.setHeader("auth", "1");
-            String str = new String (request.getParameter("pedido").getBytes ("iso-8859-1"), "UTF-8");
-            PedidoBEAN c = new GsonBuilder().setDateFormat("dd-MM-yyyy HH:mm:ss").create().fromJson(str, PedidoBEAN.class);
 
-            response.setHeader("sucesso", con.adicionar(c,cod) + "");
+        response.setHeader("auth", "1");
+        String str = new String(request.getParameter("pedido").getBytes("iso-8859-1"), "UTF-8");
+        PedidoBEAN c = new GsonBuilder().setDateFormat("dd-MM-yyyy HH:mm:ss").create().fromJson(str, PedidoBEAN.class);
 
-        } else {
-            response.setHeader("auth", "0");
+        response.setHeader("sucesso", con.adicionar(c, n, s) + "");
 
-        }
     }
 
     /**

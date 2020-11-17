@@ -108,7 +108,7 @@ public class FuncionarioDAO {
                 ca.setDataNacimento(rs.getDate(2) + "");
                 ca.setTelefone(rs.getString(3));
                 ca.setNome(rs.getString(4));
-                //foto
+                ca.setFoto(rs.getBytes(5));
                 ca.setEmail(rs.getString(6));
                 ca.setCPF(rs.getString(7));
                 ca.setRG(rs.getString(8));
@@ -155,7 +155,7 @@ public class FuncionarioDAO {
                 ca.setDataNacimento(rs.getDate(2) + "");
                 ca.setTelefone(rs.getString(3));
                 ca.setNome(rs.getString(4));
-                //foto
+                ca.setFoto(rs.getBytes(5));
                 ca.setEmail(rs.getString(6));
                 ca.setCPF(rs.getString(7));
                 ca.setRG(rs.getString(8));
@@ -267,7 +267,7 @@ public class FuncionarioDAO {
                 ca.setDataNacimento(rs.getDate(2) + "");
                 ca.setTelefone(rs.getString(3));
                 ca.setNome(rs.getString(4));
-                //foto
+               ca.setFoto(rs.getBytes(5));
                 ca.setEmail(rs.getString(6));
                 ca.setCPF(rs.getString(7));
                 ca.setRG(rs.getString(8));
@@ -301,7 +301,7 @@ public class FuncionarioDAO {
                 ca.setDataNacimento(rs.getDate(2) + "");
                 ca.setTelefone(rs.getString(3));
                 ca.setNome(rs.getString(4));
-                //foto
+                ca.setFoto(rs.getBytes(5));
                 ca.setEmail(rs.getString(6));
                 ca.setCPF(rs.getString(7));
                 ca.setRG(rs.getString(8));

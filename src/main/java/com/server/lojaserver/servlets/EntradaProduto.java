@@ -9,6 +9,7 @@ import com.google.gson.GsonBuilder;
 import com.server.lojaserver.beans.FuncionarioBEAN;
 import com.server.lojaserver.beans.ProdutoBEAN;
 import com.server.lojaserver.beans.VendaBEAN;
+import com.server.lojaserver.controle.ControleCaixa;
 import com.server.lojaserver.controle.ControleFuncionario;
 import com.server.lojaserver.controle.ControleLogin;
 import com.server.lojaserver.controle.ControleProduto;
@@ -33,7 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class EntradaProduto extends HttpServlet {
 
-    ControleLogin l = new ControleLogin();
+    ControleCaixa l = new ControleCaixa();
     ControleProduto pro = new ControleProduto();
 
     @Override
@@ -46,7 +47,7 @@ public class EntradaProduto extends HttpServlet {
             throws ServletException, IOException {
         String usuario = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
         String senha = new String(request.getParameter("senha").getBytes("iso-8859-1"), "UTF-8");
-        int cod = l.autenticaEmpresa(usuario, senha);
+        int cod = l.getCaixa(usuario, senha);
         if (cod > 0) {
             response.setHeader("auth", "1");
             float quantidade = Float.parseFloat(request.getParameter("quantidade"));

@@ -24,9 +24,9 @@ public class ControlePedido {
     private ProdutoDAO p = new ProdutoDAO();
     private PedidoDAO ped = new PedidoDAO();
 
-    public DefaultComboBoxModel buscar(String produto, int emp) {
+    public DefaultComboBoxModel buscar(String produto, String email, String senha) {
         DefaultComboBoxModel modelo = new DefaultComboBoxModel();
-        ArrayList<Produtos> pe = p.buscar(produto, emp);
+        ArrayList<Produtos> pe = p.buscar(produto, email, senha);
         for (Produtos p : pe) {
             modelo.addElement(p.getCodigo() + " : " + p.getNome() + " : R$ " + p.getPreco());
 
@@ -35,12 +35,12 @@ public class ControlePedido {
         return modelo;
     }
 
-    public ArrayList<ProdutoBEAN> listarAll(int emp) {
-        return p.listarALl(emp);
+    public ArrayList<ProdutoBEAN> listarAll(String email, String senha) {
+        return p.listarALl(email, senha);
     }
 
-    public String cadastrar(ProdutoBEAN f, int emp) {
-        p.adicionar(f, emp);
+    public String cadastrar(ProdutoBEAN f, String email, String senha) {
+        p.adicionar(f, email, senha);
         return "Cadastro realizado com sucesso!!";
     }
 
@@ -58,8 +58,8 @@ public class ControlePedido {
         return p.localizar(i);
     }
 
-    public ArrayList<Produtos> listarPedidos(ArrayList<Produtos> pro, int emp) {
-        ArrayList<Produtos> produtos = p.listarProdutos(emp);
+    public ArrayList<Produtos> listarPedidos(ArrayList<Produtos> pro, String email, String senha) {
+        ArrayList<Produtos> produtos = p.listarProdutos(email, senha);
         for (Produtos produto : produtos) {
             pro.add(produto);
         }
@@ -71,46 +71,40 @@ public class ControlePedido {
         return p.localizar(pedido);
     }
 
-    public ArrayList<Pedido> listarPedidos(int emp) {
-        ControleCaixa cai = new ControleCaixa();
+    public ArrayList<PedidoBEAN> listarPedidos(String e, String s) {
         PedidoDAO ped = new PedidoDAO();
-        int caixa = cai.getCaixa(emp);
-        //ArrayList<Pedido> pedidos = ped.listarPedidosAbertos(emp, caixa);
-        return null;
+        return ped.listarPedidos(e, s);
     }
 
-    public ArrayList<Pedido> listarPedidosCaixa(int emp) {
-        ControleCaixa cai = new ControleCaixa();
-        PedidoDAO ped = new PedidoDAO();
-        int caixa = cai.getCaixa(emp);
-        // ArrayList<Pedido> pedidos = ped.listarPedidos(emp, caixa);
-        return null;
-    }
-
-    public ArrayList<Pedido> alterarPedido(String p, int emp) {
+    public ArrayList<PedidoBEAN> alterarPedido(String p, String e, String s) {
         PedidoDAO ped = new PedidoDAO();
         ped.mudarStatusRealizado(Integer.parseInt(p), Horas.getTime());
-        return listarPedidos(emp);
+        return listarPedidos(e,s);
     }
 
-    public ArrayList<Pedido> listarPedidosRealizados(int emp) {
+    /* public ArrayList<Pedido> listarPedidosCaixa(String e, String s) {
         ControleCaixa cai = new ControleCaixa();
         PedidoDAO ped = new PedidoDAO();
-        int caixa = cai.getCaixa(emp);
-        //ArrayList<Pedido> pedidos = ped.listarPedidosRealizados(emp, caixa);
-        return null;
+        return ped.listarPedidos(emp, caixa);
+
     }
 
-    public ArrayList<Pedido> listarPedidosAtrazados(int emp) {
+    
+
+    public ArrayList<Pedido> listarPedidosRealizados(String e, String s) {
         ControleCaixa cai = new ControleCaixa();
         PedidoDAO ped = new PedidoDAO();
-        int caixa = cai.getCaixa(emp);
-        //ArrayList<Pedido> pedidos = ped.listarPedidosAtrazados(emp, caixa);
-        return null;
+        return ped.listarPedidosRealizados(emp, caixa);
     }
 
-    public Produtos buscarUm(String combo, int emp) {
-        ArrayList<Produtos> todos = p.listarProdutos(emp);
+    public ArrayList<Pedido> listarPedidosAtrazados(String e, String s) {
+        ControleCaixa cai = new ControleCaixa();
+        PedidoDAO ped = new PedidoDAO();
+        return ped.listarPedidosAtrazados(emp, caixa);
+    }*/
+
+    public Produtos buscarUm(String combo, String email, String senha) {
+        ArrayList<Produtos> todos = p.listarProdutos(email, senha);
         for (Produtos p : todos) {
             String pro = p.getCodigo() + " : " + p.getNome() + " : R$ " + p.getPreco();
             if (combo.equals(pro)) {

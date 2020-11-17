@@ -44,12 +44,12 @@ public class ExcluirAdmicao extends HttpServlet {
             throws ServletException, IOException {
         String u = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
         String s = new String(request.getParameter("senha").getBytes("iso-8859-1"), "UTF-8");
-        int cod = l.autenticaUsuario(u,s);
-        if (cod > 0) {
+        String str = new String(request.getParameter("admicao").getBytes("iso-8859-1"), "UTF-8");
+        AdmicaoBEAN c = new GsonBuilder().setDateFormat("yyyy-MM-dd").create().fromJson(str, AdmicaoBEAN.class);
+        boolean aux = con.excluir(c, u, s);
+        if (aux == true) {
             response.setHeader("auth", "1");
-            String str = new String (request.getParameter("admicao").getBytes ("iso-8859-1"), "UTF-8");
-            AdmicaoBEAN c = new GsonBuilder().setDateFormat("yyyy-MM-dd").create().fromJson(str, AdmicaoBEAN.class);
-            response.setHeader("sucesso", con.excluir(c));
+            response.setHeader("sucesso", "Sucesso");
 
         } else {
             response.setHeader("auth", "0");

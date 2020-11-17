@@ -26,17 +26,16 @@ public class DevolucaoDAO {
         this.connection = ConnectionFactory.getConnection();
     }
 
-    public int inserir(DevolucaoBEAN c) {
+    public int inserir(DevolucaoBEAN c, String u, String s) {
         int lastId = 0;
         String sql = "INSERT INTO devolucao (devMotivo, devTime, devQTD, devValor, dev_caiCodigo)"
-                + " VALUES (?, ?, ?, ?, ?);";
+                + " VALUES (?, ?, ?, ?, (select caiCodigo from empresa join caixa where empCodigo = cai_empCodigo and caiStatus = 'aberto' and empEmail = '" + u + "' and empSenha = '" + s + "'));";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, c.getMotivo());
             stmt.setString(2, c.getTime());
             stmt.setFloat(3, c.getQuantidade());
             stmt.setFloat(4, c.getValor());
-            stmt.setInt(5, c.getCaixa());
             stmt.executeUpdate();
             final ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
@@ -103,12 +102,13 @@ public class DevolucaoDAO {
         return e;
     }
 
-    public ArrayList<DevolucaoBEAN> listarDevolucaoCaixa(int caixa) {
+    public ArrayList<DevolucaoBEAN> listarDevolucaoCaixa(String u, String s) {
         ArrayList<DevolucaoBEAN> c = new ArrayList<>();
 
         String sql = "select devCodigo,devMotivo,devTime,devValor,devQTD,dev_caiCodigo,proNome\n"
-                + "                  from  caixa join devolucao join pedido join produto where\n"
-                + "                  caiCodigo = dev_caiCodigo and devCodigo = ped_devCodigo and proCodigo = ped_proCodigo and caiCodigo = " + caixa + "  order by devTime;";
+                + "                  from empresa join caixa join devolucao join pedido join produto where\n"
+                + "                 empCodigo = cai_empCodigo and caiCodigo = dev_caiCodigo and devCodigo = ped_devCodigo "
+                + "and proCodigo = ped_proCodigo and caiStatus = 'aberto' and empEmail='" + u + "' and empSenha = '" + s + "' order by devTime;";
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
@@ -131,11 +131,11 @@ public class DevolucaoDAO {
         return c;
     }
 
-    public Float getValorDevolucaoCaixa(int caixa) {
+    public Float getValorDevolucaoCaixa(String u, String s) {
         float total = 0;
         String sql = "select coalesce(sum(devQTD*proPreco),0)\n"
-                + "                  from  caixa join devolucao join pedido join produto where\n"
-                + "                  caiCodigo = dev_caiCodigo and devCodigo = ped_devCodigo and proCodigo = ped_proCodigo and caiCodigo = " + caixa + " group by caiCodigo;";
+                + "                  from  empresa join caixa join devolucao join pedido join produto where\n"
+                + "                  empCodigo = cai_empCodigo and caiCodigo = dev_caiCodigo and devCodigo = ped_devCodigo and proCodigo = ped_proCodigo and caiStatus = 'aberto' and empEmail='" + u + "' and empSenha = '" + s + "' group by caiCodigo;";
         System.out.println(sql);
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -171,11 +171,11 @@ public class DevolucaoDAO {
         return total;
     }
 
-    public Float getValorDevolucaoVenda(int caixa) {
+    public Float getValorDevolucaoVenda(String u, String s) {
         float total = 0;
         String sql = "select coalesce((pedQTD*proPreco),0)\n"
-                + "                  from  caixa join devolucao join pedido join produto where\n"
-                + "                  caiCodigo = dev_caiCodigo and devCodigo = ped_devCodigo and proCodigo = ped_proCodigo and caiCodigo = " + caixa + "group by caiCodigo;";
+                + "                  from empresa join caixa join devolucao join pedido join produto where\n"
+                + "                  empCodigo = cai_empCodigo and caiCodigo = dev_caiCodigo and devCodigo = ped_devCodigo and proCodigo = ped_proCodigo and caiStatus = 'aberto' and empEmail='" + u + "' and empSenha = '" + s + "' group by caiCodigo;";
 
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);

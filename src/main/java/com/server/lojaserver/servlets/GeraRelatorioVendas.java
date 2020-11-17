@@ -47,7 +47,7 @@ public class GeraRelatorioVendas extends HttpServlet {
         if (cod > 0) {
             ServletContext contexto = request.getServletContext();
             response.setHeader("auth", "1");
-            File filePath = r.geraRelatorioVendas(contexto, cod);
+            File filePath = r.geraRelatorioVendas(contexto, n, s);
             if (filePath != null) {
                 response.setHeader("nome", filePath.getName());
                 File downloadFile = filePath;

@@ -50,7 +50,6 @@ public class GeraRelatorioMesa extends HttpServlet {
 
         int cod = l.autenticaEmpresa(n, s);
         if (cod > 0) {
-            venda = v.getVenda(venda, cod);
             ServletContext contexto = request.getServletContext();
             response.setHeader("auth", "1");
             File filePath = r.geraRelatorioMesa(contexto, cod, venda);

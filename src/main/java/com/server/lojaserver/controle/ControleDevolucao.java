@@ -20,18 +20,16 @@ public class ControleDevolucao {
 
     ControleCaixa caixa = new ControleCaixa();
 
-    public String inserirDevolucao(DevolucaoBEAN pro, int pedido, int emp) {
-        ControleCaixa cc = new ControleCaixa();
+    public String inserirDevolucao(DevolucaoBEAN pro, int pedido, String u, String s) {
         ControlePedido cp = new ControlePedido();
         ControleVenda v = new ControleVenda();
         PedidoBEAN p = cp.listarPedido(pedido);
         if (p.getQuantidade() >= pro.getQuantidade()) {
-            pro.setCaixa(cc.getCaixa(emp));
-            int dev = e.inserir(pro);
+            int dev = e.inserir(pro, u, s);
             ControleProduto proCon = new ControleProduto();
             proCon.aumentaEstoque(p.getProduto(), (pro.getQuantidade()));
             cp.devolver(pedido, dev);
-            float valor = v.getValorFinVenda(p.getVenda(), emp);
+            float valor = pro.getQuantidade() * pro.getValor();
             v.atualizaValorFinVenda(p.getVenda(), valor);
             return "Produto Devolvido Com Sucesso!";
         } else {
@@ -39,7 +37,7 @@ public class ControleDevolucao {
         }
     }
 
-    public ArrayList<DevolucaoBEAN> listarDevolucaoVenda(String venda, int emp) {
+    public ArrayList<DevolucaoBEAN> listarDevolucaoVenda(String venda) {
         return e.listarDevolucaoVenda(Integer.parseInt(venda));
     }
 
@@ -47,12 +45,12 @@ public class ControleDevolucao {
         return e.listarUm(cod);
     }
 
-    public ArrayList<DevolucaoBEAN> listarDevolucaoCaixa(int empresa) {
-        return e.listarDevolucaoCaixa(caixa.getCaixa(empresa));
+    public ArrayList<DevolucaoBEAN> listarDevolucaoCaixa(String u, String s) {
+        return e.listarDevolucaoCaixa(u, s);
     }
 
-    public Float getTotalDevolucaoCaixa(int caixa) {
-        return e.getValorDevolucaoCaixa(caixa);
+    public Float getTotalDevolucaoCaixa(String u, String s) {
+        return e.getValorDevolucaoCaixa(u, s);
     }
 
 }

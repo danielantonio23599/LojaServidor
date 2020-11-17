@@ -22,28 +22,25 @@ public class ControleAdmicao {
         return "Sucesso";
     }
 
-    public AdmicaoBEAN localizar(String funcionario, int emp) {
+    public AdmicaoBEAN localizar(String funcionario, String email, String senha) {
         AdmicaoDAO a = new AdmicaoDAO();
 
-        return a.localizar(Integer.parseInt(funcionario), emp);
+        return a.localizar(Integer.parseInt(funcionario), email, senha);
     }
 
-    public String admitir(AdmicaoBEAN ad) {
+    public boolean admitir(AdmicaoBEAN ad, String email, String senha) {
         AdmicaoDAO a = new AdmicaoDAO();
-        a.confirmarAdmicao(ad);
-        return "sucesso";
+        return a.confirmarAdmicao(ad, email, senha);
     }
 
-    public String demitir(AdmicaoBEAN ad) {
+    public boolean demitir(AdmicaoBEAN ad, String email, String senha) {
         AdmicaoDAO a = new AdmicaoDAO();
-        a.demitir(ad);
-        return "sucesso";
+        return a.demitir(ad, email, senha);
     }
 
-    public String excluir(AdmicaoBEAN ad) {
-        AdmicaoDAO a = new AdmicaoDAO();
-        a.excluir(ad);
-        return "sucesso";
+    public boolean excluir(AdmicaoBEAN ad, String email, String senha) {
+        AdmicaoDAO a = new AdmicaoDAO();        
+        return a.excluir(ad, email, senha);
     }
 
     public void admitir(int codFun, int codEmp) {
