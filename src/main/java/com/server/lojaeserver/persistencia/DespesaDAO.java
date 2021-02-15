@@ -47,25 +47,24 @@ public class DespesaDAO {
     public ArrayList<DespesaBEAN> listarAll(String u, String s) {
         ArrayList<DespesaBEAN> c = new ArrayList<DespesaBEAN>();
 
-        String sql = "select * from empresa join caixa join despesa where empCodigo = cai_empCodigo and dis_caiCodigo = caiCodigo"
-                + "and caiStatus = 'aberto' and empCodigo = "
-                + "(select caiCodigo from empresa join caixa where empCodigo = cai_empCodigo and caiStatus = 'aberto' and empEmail = '" + u + "' and empSenha = '" + s + "');";
+        String sql = "select * from empresa join caixa join despesa where empCodigo = cai_empCodigo and dis_caiCodigo = caiCodigo and caiStatus = 'aberto' and empEmail = '"+u+"' and empSenha = '"+s+"';";
+        System.out.println(sql);
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 DespesaBEAN ca = new DespesaBEAN();
-                ca.setCodigo(rs.getInt(1));
-                ca.setNome(rs.getString(2));
-                ca.setDescricao(rs.getString(3));
-                ca.setPreco(rs.getFloat(4));
-                ca.setCaixa(rs.getInt(5));
+                ca.setCodigo(rs.getInt(31));
+                ca.setNome(rs.getString(32));
+                ca.setDescricao(rs.getString(33));
+                ca.setPreco(rs.getFloat(34));
+                ca.setCaixa(rs.getInt(35));
                 c.add(ca);
             }
             stmt.close();
 
         } catch (SQLException e) {
-            throw new RuntimeException();
+            System.out.println("ERRO: "+ e.getLocalizedMessage());
         }
         return c;
     }

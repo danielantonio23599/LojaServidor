@@ -27,7 +27,8 @@ public class SangriaDAO {
     public ArrayList<SangriaBEAN> buscar(String u,String s) {
 
         ArrayList<SangriaBEAN> p = new ArrayList<>();
-        String sql = "SELECT * FROM sangria join caixa join empresa WHERE san_caiCodigo = caiCodigo and empCodigo = cai_empCodigo and empEmail = '"+u+"' and empSenha = '"+s+";";
+        String sql = "SELECT * FROM sangria join caixa join empresa WHERE san_caiCodigo = caiCodigo and empCodigo = cai_empCodigo and empEmail = '"+u+"' and empSenha = '"+s+"';";
+        System.out.println(sql);
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();

@@ -123,11 +123,11 @@ public class ControleVenda {
         v.setCaixa(cc.getCaixa(emp));
         return ven.abrirVenda(v);
     }*/
-    public int adicionar(PedidoBEAN venda,  String e, String s) {
+    public int adicionar(PedidoBEAN venda, String e, String s) {
         int pedido = 0;
         //verificar se contem produto em estoque para produtos diferentes do tipo de cozinha
         ControleProduto cp = new ControleProduto();
-        float qtd = cp.quantidadeEstoque(venda.getProduto(), e,s, venda.getQuantidade());
+        float qtd = cp.quantidadeEstoque(venda.getProduto(), e, s, venda.getQuantidade());
         //retorn -1 referece produto do tipo Serviço
         System.out.println("quantidade :" + qtd);
         if (qtd == -1) {
@@ -207,10 +207,10 @@ public class ControleVenda {
         return ven.listarVendas(emp);
     }
 
-    public ArrayList<Venda> getVendasAbertas(int emp) {
+    public ArrayList<Venda> getVendasAbertas(String email, String senha) {
         VendaDAO ven = new VendaDAO();
         ControleCaixa cc = new ControleCaixa();
-        return ven.listarVendasAbertas(emp);
+        return ven.listarVendasAbertas(email, senha);
     }
 
     public ArrayList<Venda> getVendasPorData(int emp, String ini, String fin) {
@@ -352,11 +352,12 @@ public class ControleVenda {
         return ven.listarProdutosVendidosCaixa(email, senha);
     }
 
-    /* public String isMesasAbertas(String email,String senha) {
+    public String isMesasAbertas(String email, String senha) {
         ControleCaixa cc = new ControleCaixa();
         VendaDAO ven = new VendaDAO();
-        return ven.isVendasAbertas(email,senha);
-    }*/
+        return ven.isVendasAbertas(email, senha);
+    }
+
     private int adiciona(PedidoBEAN venda) {
         int pedido = 0;
         PedidoDAO p = new PedidoDAO();

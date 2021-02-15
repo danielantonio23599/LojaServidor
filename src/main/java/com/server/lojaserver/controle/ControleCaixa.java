@@ -67,6 +67,6 @@ public class ControleCaixa {
     }
 
     public Caixa listarValoresCaixa(String u, String senha) {
-        return c.getValoresCaixa(senha, senha);
+        return c.getValoresCaixa(u, senha);
     }
 }

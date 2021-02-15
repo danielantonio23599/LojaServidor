@@ -201,7 +201,7 @@ public class EmpresaDAO {
         SharedPreferencesEmpresaBEAN s = new SharedPreferencesEmpresaBEAN();
         s.setEmpCodigo(0);
         String sql = "select empCodigo,empEmail, empSenha,empLogo,empNomeFantazia from empresa where empCodigo = " + cod + ";";
-
+        System.out.println(sql);
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
@@ -227,17 +227,12 @@ public class EmpresaDAO {
         System.out.println(sql);
         ResultSet rs = null;
         try {
-            try {
-                 stmt = (PreparedStatement) connection.prepareStatement(sql);
-                rs = stmt.executeQuery();
-            } catch (Exception e) {
-                System.out.println("erro login :" + e.getMessage());
-            }
-
+            stmt = (PreparedStatement) connection.prepareStatement(sql);
+            rs = stmt.executeQuery();
             while (rs.next()) {
                 cod = rs.getInt(1);
             }
-            this.stmt.close();
+            stmt.close();
             return cod;
         } catch (SQLException e) {
             System.out.println(e.getMessage());

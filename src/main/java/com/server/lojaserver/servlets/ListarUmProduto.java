@@ -42,19 +42,11 @@ public class ListarUmProduto extends HttpServlet {
         String s = new String(request.getParameter("senha").getBytes("iso-8859-1"), "UTF-8");
         String combo = new String(request.getParameter("produto").getBytes("iso-8859-1"), "UTF-8");
         Produtos u = pro.buscarUm(combo, n, s);
-        if (u.getCodigo() > 0) {
-            response.setHeader("auth", "1");
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().println(new Gson().toJson(u));
+        response.setHeader("auth", "1");
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().println(new Gson().toJson(u));
 
-        } else {
-            response.setHeader("auth", "0");
-            u = null;
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().println(new Gson().toJson(u));
-        }
     }
 
     /**

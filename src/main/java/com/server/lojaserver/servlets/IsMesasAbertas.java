@@ -42,7 +42,7 @@ public class IsMesasAbertas extends HttpServlet {
         String n = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
         String s = new String(request.getParameter("senha").getBytes("iso-8859-1"), "UTF-8");
         response.setHeader("auth", "1");
-        //response.setHeader("sucesso", con.isMesasAbertas(n, s));
+        response.setHeader("sucesso", con.isMesasAbertas(n, s));
 
     }
 

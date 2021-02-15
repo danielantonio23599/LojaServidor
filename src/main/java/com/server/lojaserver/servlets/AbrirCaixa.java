@@ -41,9 +41,9 @@ public class AbrirCaixa extends HttpServlet {
             throws ServletException, IOException {
         String usuario = new String(request.getParameter("nomeUsuario").getBytes("iso-8859-1"), "UTF-8");
         String senha = new String(request.getParameter("senha").getBytes("iso-8859-1"), "UTF-8");
-
         CaixaBEAN c = new GsonBuilder().setDateFormat("dd-MM-yyyy HH:mm:ss").create().fromJson(request.getParameter("caixa"), CaixaBEAN.class);
-        if (c.getCodigo() > 0) {
+       int cod = l.autenticaEmpresa(usuario, senha);
+        if (cod> 0) {
             response.setHeader("auth", "1");
             response.setHeader("sucesso", con_caixa.abrirCaixa(c, usuario, senha));
         } else {

@@ -175,16 +175,17 @@ public class VendaDAO {
         return valor;
     }
 
-    public ArrayList<Venda> listarVendasAbertas(int caixa) {
+    public ArrayList<Venda> listarVendasAbertas(String email, String senha) {
         ArrayList<Venda> c = new ArrayList<>();
 
-        String sql = "select (venCodigo)as venda, venStatus,venTime,(select cliNome from venda join cliente where ven_cliCodigo = cliCodigo and venCodigo = venda) as cliente,\n"
-                + "                COALESCE((select  sum(pedQTD*proPreco) \n"
-                + "                from banco_loja.venda join banco_loja.pedido join banco_loja.produto where  ped_venCodigo = venCodigo and ped_proCodigo = proCodigo and venda = venCodigo ),0) \n"
-                + "                as valor, COALESCE((select sum(devValor)from devolucao join pedido where devCodigo = ped_devCodigo and ped_venCodigo = venda),0) as devolucao from\n"
-                + "                banco_loja.caixa join banco_loja.venda \n"
-                + "                where \n"
-                + "                caiCodigo = ven_caiCodigo  and caiCodigo = " + caixa + " and venStatus = 'aberta';";
+        String sql = "select (venCodigo)as venda, venStatus,venTime,\n"
+                + "(select cliNome from venda join cliente where ven_cliCodigo = cliCodigo and venCodigo = venda) as cliente,\n"
+                + "COALESCE((select  sum(pedQTD*proPreco) from banco_loja.venda join banco_loja.pedido join banco_loja.produto where  ped_venCodigo = venCodigo and ped_proCodigo = proCodigo and venda = venCodigo ),0)  as valor,\n"
+                + "COALESCE((select sum(devValor)from devolucao join pedido where devCodigo = ped_devCodigo and ped_venCodigo = venda),0) as devolucao \n"
+                + "from\n"
+                + "empresa join  caixa join venda \n"
+                + "where\n"
+                + "cai_empCodigo = empCodigo and caiCodigo = ven_caiCodigo and empEmail ='" + email + "' and empSenha='" + senha + "' and venStatus = 'aberta';";
         System.out.println(sql);
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -338,7 +339,7 @@ public class VendaDAO {
                 + "                from banco_loja.empresa join\n"
                 + "                banco_loja.caixa join banco_loja.venda\n"
                 + "                where empCodigo = cai_empCodigo and\n"
-                + "                caiCodigo = ven_caiCodigo  and empCodigo = 2 and caiData between '" + dataIn + "' and '" + dataFin + "'  ;";
+                + "                caiCodigo = ven_caiCodigo  and empCodigo = " + empresa + " and caiData between '" + dataIn + "' and '" + dataFin + "'  ;";
         System.out.println(sql);
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -555,11 +556,10 @@ public class VendaDAO {
     public ArrayList<ProdutosGravados> listarProdutosVendidosCaixa(String email, String senha) {
         ArrayList<ProdutosGravados> c = new ArrayList<ProdutosGravados>();
 
-        String sql = "SELECT  proCodigo, proNome,sum(pedQTD) as unidades ,proPreco from \n"
-                + "produto join pedido join venda join caixa join empresa where empCodigo = "
-                + "cai_empCodigo and caiCodigo = ven_caiCodigo and venCodigo = ped_venCodigo and"
-                + " ped_proCodigo = proCodigo and venStatus = 'Fechada' and ped_devCodigo is null and\n"
-                + " empCodigo = (select empCodigo from empresa where empEmail = '" + email + "' and empSenha = '" + senha + "') group by proCodigo;";
+        String sql = "SELECT  proCodigo, proNome,sum(pedQTD) as unidades ,proPreco from "
+                + "produto join pedido join venda join caixa join empresa where empCodigo = cai_empCodigo and caiCodigo = ven_caiCodigo and venCodigo = ped_venCodigo and ped_proCodigo = proCodigo and venStatus = 'Fechada' and ped_devCodigo is null and"
+                + " empEmail = '" + email + "' and empSenha = '" + senha + "' and caiStatus='aberto' group by caiCodigo";
+        System.out.println(sql);
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
@@ -583,6 +583,7 @@ public class VendaDAO {
         int total = 0;
         String sql = "SELECT count(venCodigo) FROM empresa join caixa join venda where empCodigo = cai_empCodigo "
                 + "and caiCodigo = ven_caiCodigo and caiStatus = 'aberta' and  empCodigo = (select empCodigo from empresa where empEmail = '" + email + "' and empSenha = '" + senha + "') and venStatus = 'aberta';";
+        System.out.println(sql);
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
