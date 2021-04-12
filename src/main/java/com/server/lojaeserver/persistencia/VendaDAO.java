@@ -328,6 +328,46 @@ public class VendaDAO {
         return c;
     }
 
+    public ArrayList<Venda> listarVendasPorCombinacao(int empresa, String dataIn, String dataFin, String cliente, String status) {
+        ArrayList<Venda> c = new ArrayList<>();
+
+        String sql = "select (venCodigo)as venda, venStatus,venTime,venPagamento,(select cliNome from venda join cliente where ven_cliCodigo = cliCodigo and venCodigo = venda ) as cli,\n"
+                + "                venValorFin,COALESCE((select  sum(pedQTD*proCusto) from banco_loja.venda join banco_loja.pedido join banco_loja.produto where  ped_venCodigo = venCodigo and ped_proCodigo = proCodigo \n"
+                + "				and venCodigo = venda and ped_devCodigo is null and venda = venCodigo ),0) as custo,                \n"
+                + "                COALESCE((select sum(devValor)from devolucao join pedido where devCodigo = ped_devCodigo and ped_venCodigo = venda),0) as devolucao\n"
+                + "                ,venFrete, venDesconto,venValorFin, caiData\n"
+                + "                from banco_loja.empresa join\n"
+                + "                banco_loja.caixa join banco_loja.venda join cliente\n"
+                + "                where empCodigo = cai_empCodigo and\n"
+                + "                caiCodigo = ven_caiCodigo and ven_cliCodigo = cliCodigo and empCodigo = " + empresa + " and cliNome like '" + cliente + "%' and venStatus = '" + status + "'  and caiData between '" + dataIn + "' and '" + dataFin + "' ;";
+        System.out.println(sql);
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Venda ca = new Venda();
+                ca.setCodigo(rs.getInt(1));
+                ca.setStatus(rs.getString(2));
+                ca.setHora(rs.getString(3));
+                ca.setPagamento(rs.getString(4));
+                ca.setCliente(rs.getString(5));
+                ca.setValor(rs.getFloat(6));
+                ca.setCusto(rs.getFloat(7));
+                ca.setDevolucao(rs.getFloat(8));
+                ca.setFrete(rs.getFloat(9));
+                ca.setDesconto(rs.getFloat(10));
+                ca.setValorFinal(rs.getFloat(11));
+                ca.setData(Time.formataDataBR(rs.getString(12)));
+                c.add(ca);
+            }
+            stmt.close();
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return c;
+    }
+
     public ArrayList<Venda> listarVendasPorInData(int empresa, String dataIn, String dataFin) {
         ArrayList<Venda> c = new ArrayList<>();
 

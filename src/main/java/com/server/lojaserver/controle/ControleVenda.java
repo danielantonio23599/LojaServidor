@@ -228,6 +228,11 @@ public class ControleVenda {
         return ven.listarVendasPorConsulta(emp, texto);
     }
 
+    public ArrayList<Venda> getVendasPorCominacao(int emp, String daIn, String daFin, String texto, String status) {
+        VendaDAO ven = new VendaDAO();
+        return ven.listarVendasPorCombinacao(emp, daIn, daFin, texto, status);
+    }
+
     public float getValorFinVenda(int venda, int emp) {
         VendaDAO ven = new VendaDAO();
         return ven.getValorFinVenda(venda);

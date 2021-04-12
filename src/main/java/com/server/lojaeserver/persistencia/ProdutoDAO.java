@@ -218,7 +218,7 @@ public class ProdutoDAO {
     }
 
     public void alteraQuantidade(int pro, float qtd) {
-        String sql = "update produto set proQuantidade = (select proQuantidade from  produto where proCodigo = " + pro + ") + " + qtd + " where proCodigo = " + pro + ";";
+        String sql = "update produto set proQuantidade = (select proQuantidade from  produto where proCodigo = " + pro + ") + (" + qtd + ") where proCodigo = " + pro + ";";
         System.out.println(sql);
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -272,8 +272,7 @@ public class ProdutoDAO {
 
     public float quantidadeEstoque(int produto, String em, String s) {
         String sql = "select proQuantidade from caixa join empresa join produto where empCodigo = cai_empCodigo and empCodigo = "
-                + "pro_empCodigo and proTipo != 'Serviço' and proCodigo = " + produto + " and caiStatus = 'aberto' and empCodigo ="
-                + " (select empCodigo form empresa where empEmail = '" + em + "' and empSenha = '" + s + "');";
+                + "pro_empCodigo and proTipo != 'Serviço' and proCodigo = " + produto + " and caiStatus = 'aberto' and empEmail = '" + em + "' and empSenha = '" + s + "';";
         System.out.println(sql);
         float quantidade = -1;
         try {
